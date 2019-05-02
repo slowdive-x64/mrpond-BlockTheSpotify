@@ -8,3 +8,5 @@
 /.vs/slnx.sqlite
 /.vs/BlockTheSpot
 /src/.vs/BlockTheSpot/v16
+/src/Release
+*.sln

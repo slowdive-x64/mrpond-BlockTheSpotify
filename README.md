@@ -30,15 +30,10 @@ icacls "%localappdata%\Spotify\Update" /reset /T
 
 ### Install/Uninstall:
 
-#### Easy Installation:
-[Download](install.bat) and run install.bat. You don't need to download any other file. 
-
-PS - It's not encrypted at all, it's a batch file with the mod embedded at the end (see the "MZ" header). You can always use the manual installation method.
-
-#### Manual Installation:
+#### Installation:
 [Download](chrome_elf.dll) 
 
-browse to directory inside the Spotify installation folder (next to Spotify.exe)
+browse to Spotify installation folder (where Spotify.exe there) 
 rename existing chrome_elf.dll to chrome_elf_.dll
 and drop chrome_elf.dll. 
 

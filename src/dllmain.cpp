@@ -133,10 +133,10 @@ void __stdcall LoadAPI(LPVOID* destination, LPCSTR apiName)
 		return;
 	
 	wchar_t path[MAX_PATH];
-	wchar_t windows[MAX_PATH];
-	GetSystemDirectoryW(windows, MAX_PATH);
-	wsprintf(path, L"%s\\netutils.dll", windows);
-
+	//wchar_t windows[MAX_PATH];
+	//GetSystemDirectoryW(windows, MAX_PATH);
+	//wsprintf(path, L"%s\\netutils.dll", windows);
+	wsprintf(path, L".\\chrome_elf_.dll");
 	HMODULE hModule = GetModuleHandle(path);
 	if (!hModule && !(hModule = LoadLibrary(path)))
 		return;
@@ -155,7 +155,7 @@ void __stdcall LoadAPI(LPVOID* destination, LPCSTR apiName)
 		__asm popad \
 		__asm jmp [_##N] \
 	} \
-
+/*
 API_EXPORT_ORIG(NetApiBufferAllocate)
 API_EXPORT_ORIG(NetApiBufferFree)
 API_EXPORT_ORIG(NetApiBufferReallocate)
@@ -178,6 +178,29 @@ API_EXPORT_ORIG(NetpwNameValidate)
 API_EXPORT_ORIG(NetpwPathCanonicalize)
 API_EXPORT_ORIG(NetpwPathCompare)
 API_EXPORT_ORIG(NetpwPathType)
+*/
+
+API_EXPORT_ORIG(AddDllToBlacklist)
+API_EXPORT_ORIG(CrashForException_ExportThunk)
+API_EXPORT_ORIG(DrainLog)
+API_EXPORT_ORIG(DumpHungProcessWithPtype_ExportThunk)
+API_EXPORT_ORIG(DumpProcessWithoutCrash)
+API_EXPORT_ORIG(GetCrashReports_ExportThunk)
+API_EXPORT_ORIG(GetCrashpadDatabasePath_ExportThunk)
+API_EXPORT_ORIG(GetHandleVerifier)
+API_EXPORT_ORIG(GetInstallDetailsPayload)
+API_EXPORT_ORIG(GetUserDataDirectoryThunk)
+API_EXPORT_ORIG(InjectDumpForHungInput_ExportThunk)
+API_EXPORT_ORIG(IsBlacklistInitialized)
+API_EXPORT_ORIG(IsCrashReportingEnabledImpl)
+API_EXPORT_ORIG(RegisterLogNotification)
+API_EXPORT_ORIG(RequestSingleCrashUpload_ExportThunk)
+API_EXPORT_ORIG(SetCrashKeyValueImpl)
+API_EXPORT_ORIG(SetMetricsClientId)
+API_EXPORT_ORIG(SetUploadConsent_ExportThunk)
+API_EXPORT_ORIG(SignalChromeElf)
+API_EXPORT_ORIG(SignalInitializeCrashReporting)
+API_EXPORT_ORIG(SuccessfullyBlocked)
 
 #define API_COPY(M, N) \
 	_##N = GetProcAddress(M, #N);
@@ -288,6 +311,7 @@ static char* ZeroString = "0\0";
 
 void Patch(HMODULE hModule, MODULEINFO mInfo)
 {
+	//MessageBoxA(NULL, "patch", "OK", MB_ICONWARNING);
 	DWORD d;
 	VirtualProtect(hModule, mInfo.SizeOfImage, PAGE_EXECUTE_READWRITE, &d);
 	LPVOID hEndOfModule = (uint8_t*)hModule + mInfo.SizeOfImage;
@@ -303,6 +327,7 @@ void Patch(HMODULE hModule, MODULEINFO mInfo)
 
 	if (pfnSkippableStart)
 	{
+		//MessageBoxA(NULL, "pfnSkippableStartHook", "OK", MB_ICONWARNING);
 		is_skippable_orig = (_is_skippable)pfnSkippableStart;
 		Mhook_SetHook((PVOID*)&is_skippable_orig, is_skippable_hook);
 	}
@@ -327,6 +352,7 @@ void Patch(HMODULE hModule, MODULEINFO mInfo)
 
 			if (pfnUriPtn)
 			{
+				//MessageBoxA(NULL, "pfnNowPlayingHook", "OK", MB_ICONWARNING);
 				dwCurrentTrackUriOffset = *(DWORD*)((char*)pfnUriPtn + 4);
 				now_playing_orig = (_now_playing)pfnNowPlaying;
 				Mhook_SetHook((PVOID*)&now_playing_orig, now_playing_hook);
@@ -352,6 +378,7 @@ void Patch(HMODULE hModule, MODULEINFO mInfo)
 			}
 			if (pfnRequireFocusStart)
 			{
+				//MessageBoxA(NULL, "pfnRequireFocusHook", "OK", MB_ICONWARNING);
 				can_focus_orig = (_can_focus)pfnRequireFocusStart;
 				Mhook_SetHook((PVOID*)&can_focus_orig, can_focus_hook);
 				break;
@@ -385,6 +412,7 @@ void Patch(HMODULE hModule, MODULEINFO mInfo)
 			}
 			if (skipStuckSeconds)
 			{
+				//MessageBoxA(NULL, "skipStuckSecondsHook", "OK", MB_ICONWARNING);
 				DWORD oldProtect;
 				VirtualProtect((char*)skipStuckSeconds + oneThousandMsOffset, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
 				*(DWORD*)((char*)skipStuckSeconds + oneThousandMsOffset) = 0;
@@ -427,6 +455,7 @@ void PatchAdMain(HMODULE hModule, MODULEINFO mInfo)
 	}
 	if (adMissingIdAddr)
 	{
+		//MessageBoxA(NULL, "adMissingIdAddrHook", "OK", MB_ICONWARNING);
 		DWORD oldProtect;
 		VirtualProtect((char*)adMissingIdAddr + adMissingNopOffset, adMissingNopCount, PAGE_EXECUTE_READWRITE, &oldProtect);
 		memset((char*)adMissingIdAddr + adMissingNopOffset, 0x90, adMissingNopCount);

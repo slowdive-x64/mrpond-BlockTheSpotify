@@ -2,15 +2,15 @@
 
 ## Video, audio & banner adblock/skip for Spotify
 
-**Current Version:** 0.13
+**Current Version:** 0.14 unofficial
 
-**Last updated:** 5th March 2019
+**Last updated:** 3rd May 2019
 
-**Last tested version:** 1.1.4.197.g92d52c4f
+**Last tested version:** 1.1.5.153.gf614956d
 
 ### Important Notice
 
-If you are using Spotify 1.1.5.xxx or newer, please use run the automatic downgrade script [here](https://github.com/master131/BlockTheSpot/raw/master/downgrade.bat) which will downgrade to 1.1.4.197.g92d52c4f and also disable auto-update. Thanks @CHEF-KOCH.
+--
 
 #### How do I re-enable automatic updates?
 
@@ -31,14 +31,20 @@ icacls "%localappdata%\Spotify\Update" /reset /T
 ### Install/Uninstall:
 
 #### Easy Installation:
-[Download](https://github.com/master131/BlockTheSpot/raw/master/install.bat) and run install.bat. You don't need to download any other file. 
+[Download](install.bat) and run install.bat. You don't need to download any other file. 
 
 PS - It's not encrypted at all, it's a batch file with the mod embedded at the end (see the "MZ" header). You can always use the manual installation method.
 
 #### Manual Installation:
-[Download](https://github.com/master131/BlockTheSpot/raw/master/netutils.dll) and drop netutils.dll inside the Spotify installation folder (next to Spotify.exe).
+[Download](chrome_elf.dll) 
+
+browse to directory inside the Spotify installation folder (next to Spotify.exe)
+rename existing chrome_elf.dll to chrome_elf_.dll
+and drop chrome_elf.dll. 
 
 The default Spotify installation location is: %APPDATA%/Spotify (copy and paste into Explorer address bar)
 
 #### Uninstall:
-To uninstall, simply delete netutils.dll from your Spotify installation (see above for the location).
+To uninstall, simply delete chrome_elf.dll from your Spotify installation
+and rename chrome_elf_.dll to chrome_elf.dll
+(see above for the location).

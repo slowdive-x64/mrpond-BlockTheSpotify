@@ -586,11 +586,16 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls(hModule);
-
+		
+		// Addons - kill the crashpad job.
+		if (wcsstr(GetCommandLine(), L"crashpad-handler"))
+			ExitProcess(0);
+		
 		// Only patch the main process and none of the renderers/workers
 		if (!wcsstr(GetCommandLine(), L"--type="))
 			CreateThread(NULL, NULL, MainThread, NULL, 0, NULL);
 		break;
+
 	}
 	return TRUE;
 }

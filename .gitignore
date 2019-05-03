@@ -10,3 +10,6 @@
 /src/.vs/BlockTheSpot/v16
 /src/Release
 *.sln
+/Debug
+/Release
+/src/BlockTheSpot.vcxproj.user

@@ -4,20 +4,21 @@
 
 **Current Version:** 0.14 unofficial
 
-**Last updated:** 3rd May 2019
+**Last updated:** 6th June 2019
 
-**Last tested version:** 1.1.5.153.gf614956d
+**Last tested version:** 1.1.8.439.g8502297d
 
 ### Important Notice
 
+Windows defender had alert dll as virus
+Threat definition 1.295.127.0
+
+This dll is virus free, it was fault positive
+if you don't trust this you can check and recompile it from source.
+
+Add dll to anti-virus exception also work.
+
 --
-
-#### How do I re-enable automatic updates?
-
-Run Command Prompt as administrator and enter the following command:
-```
-icacls "%localappdata%\Spotify\Update" /reset /T
-```
 
 ### Features:
 * Windows only
@@ -28,18 +29,24 @@ icacls "%localappdata%\Spotify\Update" /reset /T
 
 :warning: This mod is for the [**Desktop release**](https://www.spotify.com/download/windows/) of Spotify on Windows and **not the Microsoft Store version**.
 
-### Install/Uninstall:
+### Install/Uninstall/Update:
+
+#### Update:
+The dll got replace after spotify update, you need to replace dll again
+[Download](chrome_elf.dll) 
+1. Browse to Spotify installation folder (where Spotify.exe there) 
+2. and drop chrome_elf.dll. 
 
 #### Installation:
 [Download](chrome_elf.dll) 
 
-browse to Spotify installation folder (where Spotify.exe there) 
-rename existing chrome_elf.dll to chrome_elf_.dll
-and drop chrome_elf.dll. 
+1. Browse to Spotify installation folder (where Spotify.exe there) 
+2. rename existing chrome_elf.dll to chrome_elf_.dll
+3. and drop chrome_elf.dll. 
 
 The default Spotify installation location is: %APPDATA%/Spotify (copy and paste into Explorer address bar)
 
 #### Uninstall:
-To uninstall, simply delete chrome_elf.dll from your Spotify installation
-and rename chrome_elf_.dll to chrome_elf.dll
-(see above for the location).
+1. Browse to Spotify installation folder (where Spotify.exe there) 
+2. simply delete chrome_elf.dll from your Spotify installation
+3. and rename chrome_elf_.dll to chrome_elf.dll

@@ -181,14 +181,19 @@ API_EXPORT_ORIG(NetpwPathType)
 */
 
 API_EXPORT_ORIG(AddDllToBlacklist)
+API_EXPORT_ORIG(ClearReportsBetween_ExportThunk)
 API_EXPORT_ORIG(CrashForException_ExportThunk)
+API_EXPORT_ORIG(DisableHook)
 API_EXPORT_ORIG(DrainLog)
 API_EXPORT_ORIG(DumpHungProcessWithPtype_ExportThunk)
 API_EXPORT_ORIG(DumpProcessWithoutCrash)
+API_EXPORT_ORIG(GetApplyHookResult)
+API_EXPORT_ORIG(GetBlockedModulesCount)
 API_EXPORT_ORIG(GetCrashReports_ExportThunk)
 API_EXPORT_ORIG(GetCrashpadDatabasePath_ExportThunk)
 API_EXPORT_ORIG(GetHandleVerifier)
 API_EXPORT_ORIG(GetInstallDetailsPayload)
+API_EXPORT_ORIG(GetUniqueBlockedModulesCount)
 API_EXPORT_ORIG(GetUserDataDirectoryThunk)
 API_EXPORT_ORIG(InjectDumpForHungInput_ExportThunk)
 API_EXPORT_ORIG(IsBlacklistInitialized)
@@ -311,7 +316,6 @@ static char* ZeroString = "0\0";
 
 void Patch(HMODULE hModule, MODULEINFO mInfo)
 {
-	//MessageBoxA(NULL, "patch", "OK", MB_ICONWARNING);
 	DWORD d;
 	VirtualProtect(hModule, mInfo.SizeOfImage, PAGE_EXECUTE_READWRITE, &d);
 	LPVOID hEndOfModule = (uint8_t*)hModule + mInfo.SizeOfImage;
@@ -327,7 +331,6 @@ void Patch(HMODULE hModule, MODULEINFO mInfo)
 
 	if (pfnSkippableStart)
 	{
-		//MessageBoxA(NULL, "pfnSkippableStartHook", "OK", MB_ICONWARNING);
 		is_skippable_orig = (_is_skippable)pfnSkippableStart;
 		Mhook_SetHook((PVOID*)&is_skippable_orig, is_skippable_hook);
 	}
@@ -352,7 +355,6 @@ void Patch(HMODULE hModule, MODULEINFO mInfo)
 
 			if (pfnUriPtn)
 			{
-				//MessageBoxA(NULL, "pfnNowPlayingHook", "OK", MB_ICONWARNING);
 				dwCurrentTrackUriOffset = *(DWORD*)((char*)pfnUriPtn + 4);
 				now_playing_orig = (_now_playing)pfnNowPlaying;
 				Mhook_SetHook((PVOID*)&now_playing_orig, now_playing_hook);
@@ -378,7 +380,6 @@ void Patch(HMODULE hModule, MODULEINFO mInfo)
 			}
 			if (pfnRequireFocusStart)
 			{
-				//MessageBoxA(NULL, "pfnRequireFocusHook", "OK", MB_ICONWARNING);
 				can_focus_orig = (_can_focus)pfnRequireFocusStart;
 				Mhook_SetHook((PVOID*)&can_focus_orig, can_focus_hook);
 				break;
@@ -412,7 +413,6 @@ void Patch(HMODULE hModule, MODULEINFO mInfo)
 			}
 			if (skipStuckSeconds)
 			{
-				//MessageBoxA(NULL, "skipStuckSecondsHook", "OK", MB_ICONWARNING);
 				DWORD oldProtect;
 				VirtualProtect((char*)skipStuckSeconds + oneThousandMsOffset, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
 				*(DWORD*)((char*)skipStuckSeconds + oneThousandMsOffset) = 0;
@@ -455,7 +455,6 @@ void PatchAdMain(HMODULE hModule, MODULEINFO mInfo)
 	}
 	if (adMissingIdAddr)
 	{
-		//MessageBoxA(NULL, "adMissingIdAddrHook", "OK", MB_ICONWARNING);
 		DWORD oldProtect;
 		VirtualProtect((char*)adMissingIdAddr + adMissingNopOffset, adMissingNopCount, PAGE_EXECUTE_READWRITE, &oldProtect);
 		memset((char*)adMissingIdAddr + adMissingNopOffset, 0x90, adMissingNopCount);

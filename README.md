@@ -2,21 +2,16 @@
 
 ## Video, audio & banner adblock/skip for Spotify
 
-**Current Version:** 0.14 unofficial
+**Current Version:** 0.15 unofficial
 
-**Last updated:** 6th June 2019
+**Last updated:** 18th June 2019
 
-**Last tested version:** 1.1.8.439.g8502297d
+**Last tested version:** 1.1.9.383.g9f48828e
 
 ### Important Notice
 
-Windows defender had alert dll as virus
-Threat definition 1.295.127.0
-
-This dll is virus free, it was fault positive
+This dll is virus free,
 if you don't trust this you can check and recompile it from source.
-
-Add dll to anti-virus exception also work.
 
 --
 
@@ -35,7 +30,9 @@ Add dll to anti-virus exception also work.
 The dll got replace after spotify update, you need to replace dll again
 [Download](chrome_elf.dll) 
 1. Browse to Spotify installation folder (where Spotify.exe there) 
-2. and drop chrome_elf.dll. 
+2. delete existing chrome_elf_.dll
+2. rename existing chrome_elf.dll to chrome_elf_.dll
+3. and drop new chrome_elf.dll. 
 
 #### Installation:
 [Download](chrome_elf.dll) 

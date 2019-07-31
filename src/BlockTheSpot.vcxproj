@@ -14,7 +14,7 @@
     <ProjectGuid>{82F7E20E-D166-4474-8EB1-81160355B5B2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SpotifyAdBlock</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>BlockTheSpot</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -89,21 +89,17 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="disasm-lib\cpu.h" />
-    <ClInclude Include="disasm-lib\disasm.h" />
-    <ClInclude Include="disasm-lib\disasm_x86.h" />
-    <ClInclude Include="disasm-lib\disasm_x86_tables.h" />
-    <ClInclude Include="disasm-lib\misc.h" />
     <ClInclude Include="hosts.h" />
-    <ClInclude Include="mhook-lib\mhook.h" />
+    <ClInclude Include="mhook\disasm-lib\cpu.h" />
+    <ClInclude Include="mhook\disasm-lib\disasm.h" />
+    <ClInclude Include="mhook\disasm-lib\disasm_x86.h" />
+    <ClInclude Include="mhook\disasm-lib\disasm_x86_tables.h" />
+    <ClInclude Include="mhook\disasm-lib\misc.h" />
+    <ClInclude Include="mhook\mhook-lib\mhook.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="disasm-lib\cpu.c" />
-    <ClCompile Include="disasm-lib\disasm.c" />
-    <ClCompile Include="disasm-lib\disasm_x86.c" />
-    <ClCompile Include="disasm-lib\misc.c" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -112,8 +108,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="mhook-lib\mhook.cpp" />
     <ClCompile Include="BlockTheSpot.cpp" />
+    <ClCompile Include="mhook\disasm-lib\cpu.c" />
+    <ClCompile Include="mhook\disasm-lib\disasm.c" />
+    <ClCompile Include="mhook\disasm-lib\disasm_x86.c" />
+    <ClCompile Include="mhook\mhook-lib\mhook.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

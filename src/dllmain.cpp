@@ -1,6 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
-#include "mhook-lib/mhook.h"
+#include "mhook/mhook-lib/mhook.h"
 #include "hosts.h"
 #include <WinSock2.h>
 #include <iostream>

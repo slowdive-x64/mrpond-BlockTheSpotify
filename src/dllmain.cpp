@@ -127,89 +127,116 @@ int WSAAPI WSASend_hook(
 	return WSASend_orig(s, lpBuffers, dwBufferCount, lpNumberOfBytesSent, dwFlags, lpOverlapped, lpCompletionRoutine);
 }
 
-void __stdcall LoadAPI(LPVOID* destination, LPCSTR apiName)
-{
-	if (*destination)
-		return;
-	
-	wchar_t path[MAX_PATH];
-	//wchar_t windows[MAX_PATH];
-	//GetSystemDirectoryW(windows, MAX_PATH);
-	//wsprintf(path, L"%s\\netutils.dll", windows);
-	wsprintf(path, L".\\chrome_elf_.dll");
-	HMODULE hModule = GetModuleHandle(path);
-	if (!hModule && !(hModule = LoadLibrary(path)))
-		return;
-	*destination = GetProcAddress(hModule, apiName);
+//void __stdcall LoadAPI(LPVOID* destination, LPCSTR apiName)
+//{
+//	if (*destination)
+//		return;
+//	
+//	wchar_t path[MAX_PATH];
+//	//wchar_t windows[MAX_PATH];
+//	//GetSystemDirectoryW(windows, MAX_PATH);
+//	//wsprintf(path, L"%s\\netutils.dll", windows);
+//	wsprintf(path, L".\\chrome_elf_.dll");
+//	HMODULE hModule = GetModuleHandle(path);
+//	if (!hModule && !(hModule = LoadLibrary(path)))
+//		return;
+//	*destination = GetProcAddress(hModule, apiName);
+//}
+//
+//#define API_EXPORT_ORIG(N) \
+//	static LPVOID _##N = NULL;	\
+//	char S_##N[] = "" # N; \
+//	extern "C" __declspec(dllexport) __declspec(naked) void N ## () \
+//	{ \
+//		__asm pushad \
+//		__asm push offset S_##N \
+//		__asm push offset _##N \
+//		__asm call LoadAPI \
+//		__asm popad \
+//		__asm jmp [_##N] \
+//	} 
+
+//API_EXPORT_ORIG(AddDllToBlacklist)
+//API_EXPORT_ORIG(ClearReportsBetween_ExportThunk)
+//API_EXPORT_ORIG(CrashForException_ExportThunk)
+//API_EXPORT_ORIG(DisableHook)
+//API_EXPORT_ORIG(DrainLog)
+//API_EXPORT_ORIG(DumpHungProcessWithPtype_ExportThunk)
+//API_EXPORT_ORIG(DumpProcessWithoutCrash)
+//API_EXPORT_ORIG(GetApplyHookResult)
+//API_EXPORT_ORIG(GetBlockedModulesCount)
+//API_EXPORT_ORIG(GetCrashReports_ExportThunk)
+//API_EXPORT_ORIG(GetCrashpadDatabasePath_ExportThunk)
+//API_EXPORT_ORIG(GetHandleVerifier)
+//API_EXPORT_ORIG(GetInstallDetailsPayload)
+//API_EXPORT_ORIG(GetUniqueBlockedModulesCount)
+//API_EXPORT_ORIG(GetUserDataDirectoryThunk)
+//API_EXPORT_ORIG(InjectDumpForHungInput_ExportThunk)
+//API_EXPORT_ORIG(IsBlacklistInitialized)
+//API_EXPORT_ORIG(IsCrashReportingEnabledImpl)
+//API_EXPORT_ORIG(RegisterLogNotification)
+//API_EXPORT_ORIG(RequestSingleCrashUpload_ExportThunk)
+//API_EXPORT_ORIG(SetCrashKeyValueImpl)
+//API_EXPORT_ORIG(SetMetricsClientId)
+//API_EXPORT_ORIG(SetUploadConsent_ExportThunk)
+//API_EXPORT_ORIG(SignalChromeElf)
+//API_EXPORT_ORIG(SignalInitializeCrashReporting)
+//API_EXPORT_ORIG(SuccessfullyBlocked)
+
+//#define API_COPY(M, N) \
+//	_##N = GetProcAddress(M, #N);
+
+bool AddDllToBlacklist (const wchar_t* dll_name) {
+	return true;
 }
-
-#define API_EXPORT_ORIG(N) \
-	static LPVOID _##N = NULL;	\
-	char S_##N[] = "" # N; \
-	extern "C" __declspec(dllexport) __declspec(naked) void N ## () \
-	{ \
-		__asm pushad \
-		__asm push offset S_##N \
-		__asm push offset _##N \
-		__asm call LoadAPI \
-		__asm popad \
-		__asm jmp [_##N] \
-	} \
-/*
-API_EXPORT_ORIG(NetApiBufferAllocate)
-API_EXPORT_ORIG(NetApiBufferFree)
-API_EXPORT_ORIG(NetApiBufferReallocate)
-API_EXPORT_ORIG(NetApiBufferSize)
-API_EXPORT_ORIG(NetRemoteComputerSupports)
-API_EXPORT_ORIG(NetapipBufferAllocate)
-API_EXPORT_ORIG(NetpIsComputerNameValid)
-API_EXPORT_ORIG(NetpIsDomainNameValid)
-API_EXPORT_ORIG(NetpIsGroupNameValid)
-API_EXPORT_ORIG(NetpIsRemote)
-API_EXPORT_ORIG(NetpIsRemoteNameValid)
-API_EXPORT_ORIG(NetpIsShareNameValid)
-API_EXPORT_ORIG(NetpIsUncComputerNameValid)
-API_EXPORT_ORIG(NetpIsUserNameValid)
-API_EXPORT_ORIG(NetpwListCanonicalize)
-API_EXPORT_ORIG(NetpwListTraverse)
-API_EXPORT_ORIG(NetpwNameCanonicalize)
-API_EXPORT_ORIG(NetpwNameCompare)
-API_EXPORT_ORIG(NetpwNameValidate)
-API_EXPORT_ORIG(NetpwPathCanonicalize)
-API_EXPORT_ORIG(NetpwPathCompare)
-API_EXPORT_ORIG(NetpwPathType)
-*/
-
-API_EXPORT_ORIG(AddDllToBlacklist)
-API_EXPORT_ORIG(ClearReportsBetween_ExportThunk)
-API_EXPORT_ORIG(CrashForException_ExportThunk)
-API_EXPORT_ORIG(DisableHook)
-API_EXPORT_ORIG(DrainLog)
-API_EXPORT_ORIG(DumpHungProcessWithPtype_ExportThunk)
-API_EXPORT_ORIG(DumpProcessWithoutCrash)
-API_EXPORT_ORIG(GetApplyHookResult)
-API_EXPORT_ORIG(GetBlockedModulesCount)
-API_EXPORT_ORIG(GetCrashReports_ExportThunk)
-API_EXPORT_ORIG(GetCrashpadDatabasePath_ExportThunk)
-API_EXPORT_ORIG(GetHandleVerifier)
-API_EXPORT_ORIG(GetInstallDetailsPayload)
-API_EXPORT_ORIG(GetUniqueBlockedModulesCount)
-API_EXPORT_ORIG(GetUserDataDirectoryThunk)
-API_EXPORT_ORIG(InjectDumpForHungInput_ExportThunk)
-API_EXPORT_ORIG(IsBlacklistInitialized)
-API_EXPORT_ORIG(IsCrashReportingEnabledImpl)
-API_EXPORT_ORIG(RegisterLogNotification)
-API_EXPORT_ORIG(RequestSingleCrashUpload_ExportThunk)
-API_EXPORT_ORIG(SetCrashKeyValueImpl)
-API_EXPORT_ORIG(SetMetricsClientId)
-API_EXPORT_ORIG(SetUploadConsent_ExportThunk)
-API_EXPORT_ORIG(SignalChromeElf)
-API_EXPORT_ORIG(SignalInitializeCrashReporting)
-API_EXPORT_ORIG(SuccessfullyBlocked)
-
-#define API_COPY(M, N) \
-	_##N = GetProcAddress(M, #N);
-
+void ClearReportsBetween_ExportThunk (time_t begin, time_t end) {}
+int CrashForException_ExportThunk (EXCEPTION_POINTERS* info) {
+	return UnhandledExceptionFilter (info);
+}
+void DisableHook () {}
+uint32_t DrainLog (uint8_t* buffer,	uint32_t buffer_size, uint32_t* log_remaining) {
+	return 0;
+}
+bool DumpHungProcessWithPtype_ExportThunk (HANDLE process_handle, const char* ptype) {
+	return false;
+}
+void DumpProcessWithoutCrash () {}
+int32_t GetApplyHookResult () {	return 0; }
+uint32_t GetBlockedModulesCount () { return 0; }
+size_t GetCrashReports_ExportThunk (void* reports, size_t reports_size) {
+	return 0;
+}
+const wchar_t* GetCrashpadDatabasePath_ExportThunk () {
+	return nullptr;
+}
+void GetHandleVerifier () {}
+uint32_t GetInstallDetailsPayload () { return 0; }
+uint32_t GetUniqueBlockedModulesCount () {	return 0; }
+bool GetUserDataDirectoryThunk (wchar_t* user_data_dir,
+	size_t user_data_dir_length,
+	wchar_t* invalid_user_data_dir,
+	size_t invalid_user_data_dir_length) {
+	return true;
+}
+HANDLE InjectDumpForHungInput_ExportThunk (HANDLE process) {
+	return nullptr;
+}
+bool IsBlacklistInitialized () {
+	return false;
+}
+bool IsCrashReportingEnabledImpl () {
+	return false;
+}
+bool RegisterLogNotification (HANDLE event_handle) {
+	return false;
+}
+void RequestSingleCrashUpload_ExportThunk (const char* local_id) {}
+void SetCrashKeyValueImpl () {}
+void SetMetricsClientId (const char* client_id) {}
+void SetUploadConsent_ExportThunk (bool consent) {}
+void SignalChromeElf () {}
+void SignalInitializeCrashReporting() {}
+void SuccessfullyBlocked (const wchar_t** blocked_dlls, int* size) {}
 
 typedef char (__fastcall* _is_skippable)(
 	char* This,
@@ -585,14 +612,14 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls(hModule);
-		
-		// Addons - kill the crashpad job.
-		if (wcsstr(GetCommandLine(), L"crashpad-handler"))
-			ExitProcess(0);
+		//Addons - kill the crashpad job.
+		//if (wcsstr(GetCommandLine(), L"crashpad-handler"))
+			//ExitProcess(0);
 		
 		// Only patch the main process and none of the renderers/workers
-		if (!wcsstr(GetCommandLine(), L"--type="))
-			CreateThread(NULL, NULL, MainThread, NULL, 0, NULL);
+		// this make hook not work on spotify 1.1.12.449.g4109e645
+		//	if (!wcsstr(GetCommandLine(), L"--type="))
+		CreateThread(NULL, NULL, MainThread, NULL, 0, NULL);
 		break;
 
 	}

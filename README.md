@@ -2,11 +2,11 @@
 
 ## Video, audio & banner adblock/skip for Spotify
 
-**Current Version:** 0.16 unofficial
+**Current Version:** 0.17 unofficial
 
-**Last updated:** 4th August 2019
+**Last updated:** 17th August 2019
 
-**Last tested version:** 1.1.12.449.g4109e645
+**Last tested version:** 1.1.12.451.gdb77255f
 
 ### Important Notice
 
@@ -14,9 +14,9 @@ This dll is virus free,
 
 if you don't trust this you can check and recompile it from source.
 
-no more rename chrome_elf.dll to chrome_elf_.dll
-
 simply download and replace it!!
+
+Please do support spotify by using premium!!!!
 
 --
 
@@ -32,18 +32,12 @@ simply download and replace it!!
 ### Install/Uninstall/Update:
 
 The default Spotify installation location is: %APPDATA%/Spotify (copy and paste into Explorer address bar)
-
-#### Installation:
 [Download](chrome_elf.dll) 
+
+#### Installation/Update:
 1. Browse to Spotify installation folder (where Spotify.exe there) 
 2. backup existing chrome_elf.dll by rename it (e.g. chrome_elf.bak)
 3. and drop chrome_elf.dll. 
-
-#### Update:
-The dll got replace after spotify update, you need to replace dll again
-[Download](chrome_elf.dll) 
-1. Browse to Spotify installation folder (where Spotify.exe there) 
-2. download & replace existing chrome_elf.dll
 
 #### Uninstall:
 1. Browse to Spotify installation folder (where Spotify.exe there) 

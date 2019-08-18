@@ -2,13 +2,15 @@
 
 ## Video, audio & banner adblock/skip for Spotify
 
-**Current Version:** 0.17 unofficial
+**Current Version:** 0.18 unofficial- Experimental branch 
 
-**Last updated:** 17th August 2019
+**Last updated:** 19th August 2019
 
 **Last tested version:** 1.1.12.451.gdb77255f
 
 ### Important Notice
+
+for my personal use...
 
 This dll is virus free,
 

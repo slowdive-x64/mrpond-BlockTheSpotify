@@ -50,6 +50,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>chrome_elf</TargetName>
+    <OutDir>$(ProjectDir)..\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -76,8 +77,9 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;BLOCKTHESPOT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -85,16 +87,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ModuleDefinitionFile>chrome_elf.def</ModuleDefinitionFile>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="hosts.h" />
-    <ClInclude Include="mhook\disasm-lib\cpu.h" />
-    <ClInclude Include="mhook\disasm-lib\disasm.h" />
-    <ClInclude Include="mhook\disasm-lib\disasm_x86.h" />
-    <ClInclude Include="mhook\disasm-lib\disasm_x86_tables.h" />
-    <ClInclude Include="mhook\disasm-lib\misc.h" />
-    <ClInclude Include="mhook\mhook-lib\mhook.h" />
+    <ClInclude Include="HookApi.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -108,10 +106,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="BlockTheSpot.cpp" />
-    <ClCompile Include="mhook\disasm-lib\cpu.c" />
-    <ClCompile Include="mhook\disasm-lib\disasm.c" />
-    <ClCompile Include="mhook\disasm-lib\disasm_x86.c" />
-    <ClCompile Include="mhook\mhook-lib\mhook.cpp" />
+    <ClCompile Include="HookApi.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>

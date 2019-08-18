@@ -86,37 +86,13 @@ DWORD WINAPI MainThread(LPVOID)
 	return 0;
 }
 
-DWORD WINAPI BlockConnectThread (LPVOID)
-{
-	HMODULE hModule = GetModuleHandle (NULL);
-	MODULEINFO mInfo = { 0 };
-	if (GetModuleInformation (GetCurrentProcess (), hModule, &mInfo, sizeof (MODULEINFO))) {
-
-		LPVOID skipPod = FindPattern ((uint8_t*)hModule, mInfo.SizeOfImage, (BYTE*) "\x07\x0F\x85\x00\x00\x00\x00\xE8", "xxx????x");
-
-		if (skipPod)
-		{
-			DWORD oldProtect;
-			VirtualProtect ((char*)skipPod + 1, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
-			memset ((char*)skipPod + 1, 0x90, 1);
-			VirtualProtect ((char*)skipPod + 1, 1, oldProtect, &oldProtect);
-
-			VirtualProtect ((char*)skipPod + 2, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
-			memset ((char*)skipPod + 2, 0xE9, 1);
-			VirtualProtect ((char*)skipPod + 2, 1, oldProtect, &oldProtect);
-		}
-
-	}
-	return 0;
-}
-
 typedef SOCKET (__stdcall* pfnconnect)(SOCKET s, const struct sockaddr* name, int namelen);
 
 
 int WINAPI connecthook (DWORD RetAddr, pfnconnect fnconnect, SOCKET s, const struct sockaddr* name, int namelen)
 {
 	char *allowip = "151.101.8.246"; // Image
-	char* allowip2 = "35.186.224.53"; // Ticket concert
+	char *allowip2 = "35.186.224.53"; // Ticket concert
 	char ipstr[INET_ADDRSTRLEN];
 	struct sockaddr_in* ipv4 = (struct sockaddr_in*)name;
 	inet_ntop (ipv4->sin_family, &(ipv4->sin_addr), ipstr, INET_ADDRSTRLEN);
@@ -126,7 +102,8 @@ int WINAPI connecthook (DWORD RetAddr, pfnconnect fnconnect, SOCKET s, const str
 	if (_stricmp (ipstr, allowip2) == 0) {
 		return fnconnect (s, name, namelen);
 	}
-	return WSAENETDOWN;
+	Sleep (10);
+	return SOCKET_ERROR;
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,

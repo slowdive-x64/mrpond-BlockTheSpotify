@@ -551,14 +551,20 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls(hModule);
-		//Addons - kill the crashpad job.
-		//if (wcsstr(GetCommandLine(), L"crashpad-handler"))
-			//ExitProcess(0);
-		
 		// Only patch the main process and none of the renderers/workers
-		// this make hook not work on spotify 1.1.12.449.g4109e645
-		if (!wcsstr(GetCommandLine(), L"--type="))
-			CreateThread(NULL, NULL, MainThread, NULL, 0, NULL);
+		if (!wcsstr (GetCommandLine (), L"--type="))
+			switch (MessageBox (
+				NULL,
+				(LPCWSTR)L"I'll buy premium if had money!",
+				(LPCWSTR)L"Warning",
+				MB_YESNO | MB_ICONWARNING)) {
+			case IDYES:
+				CreateThread (NULL, NULL, MainThread, NULL, 0, NULL);
+				break;
+			default:
+				exit (0);
+				break;
+			}
 		break;
 
 	}

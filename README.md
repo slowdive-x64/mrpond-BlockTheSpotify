@@ -1,8 +1,10 @@
 # BlockTheSpot
 
+Please do support Spotify by using premium!!!!
+
 ## Video, audio & banner adblock/skip for Spotify
 
-**Current Version:** 0.18
+**Current Version:** 0.19
 
 **Last updated:** 19th August 2019
 
@@ -12,11 +14,7 @@
 
 This dll is virus free,
 
-if you don't trust this you can check and recompile it from source.
-
-simply download and replace it!!
-
-Please do support spotify by using premium!!!!
+You can check and recompile it from source.
 
 --
 

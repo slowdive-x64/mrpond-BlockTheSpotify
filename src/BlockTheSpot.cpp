@@ -1,6 +1,4 @@
 // BlockTheSpot.cpp : Defines the exported functions for the DLL application.
-//
-
 #include "stdafx.h"
 
 bool AddDllToBlacklist (const wchar_t* dll_name) { return true; }

@@ -13,11 +13,13 @@
 
 
 // TODO: reference additional headers your program requires here
+#include "../mhook/mhook-lib/mhook.h"
+#include "hosts.h"
+#include <WinSock2.h>
 #include <iostream>
 #include <algorithm>
 #include <Psapi.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include "HookApi.h"
+
+#pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Psapi.lib")
-#pragma comment(lib, "ws2_32.lib") 
+#pragma comment(lib, "Version.lib")

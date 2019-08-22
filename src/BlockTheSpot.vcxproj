@@ -48,7 +48,6 @@
     <TargetName>chrome_elf</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
     <TargetName>chrome_elf</TargetName>
     <OutDir>$(ProjectDir)..\</OutDir>
   </PropertyGroup>
@@ -73,12 +72,11 @@
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;BLOCKTHESPOT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
@@ -89,24 +87,16 @@
       <ModuleDefinitionFile>chrome_elf.def</ModuleDefinitionFile>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\mhook\disasm-lib\cpu.h" />
-    <ClInclude Include="..\mhook\disasm-lib\disasm.h" />
-    <ClInclude Include="..\mhook\disasm-lib\disasm_x86.h" />
-    <ClInclude Include="..\mhook\disasm-lib\disasm_x86_tables.h" />
-    <ClInclude Include="..\mhook\disasm-lib\misc.h" />
-    <ClInclude Include="..\mhook\mhook-lib\mhook.h" />
+    <ClInclude Include="HookApi.h" />
     <ClInclude Include="hosts.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\mhook\disasm-lib\cpu.c" />
-    <ClCompile Include="..\mhook\disasm-lib\disasm.c" />
-    <ClCompile Include="..\mhook\disasm-lib\disasm_x86.c" />
-    <ClCompile Include="..\mhook\mhook-lib\mhook.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -116,6 +106,8 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="BlockTheSpot.cpp" />
+    <ClCompile Include="HookApi.cpp" />
+    <ClCompile Include="hosts.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>

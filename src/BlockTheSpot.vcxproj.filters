@@ -4,48 +4,25 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="BlockTheSpot.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="..\mhook\mhook-lib\mhook.cpp">
-      <Filter>mhook</Filter>
+    <ClCompile Include="HookApi.cpp">
+      <Filter>hookapi</Filter>
     </ClCompile>
-    <ClCompile Include="..\mhook\disasm-lib\cpu.c">
-      <Filter>mhook</Filter>
-    </ClCompile>
-    <ClCompile Include="..\mhook\disasm-lib\disasm.c">
-      <Filter>mhook</Filter>
-    </ClCompile>
-    <ClCompile Include="..\mhook\disasm-lib\disasm_x86.c">
-      <Filter>mhook</Filter>
-    </ClCompile>
+    <ClCompile Include="hosts.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="HookApi.h">
+      <Filter>hookapi</Filter>
+    </ClInclude>
     <ClInclude Include="hosts.h" />
-    <ClInclude Include="..\mhook\mhook-lib\mhook.h">
-      <Filter>mhook</Filter>
-    </ClInclude>
-    <ClInclude Include="..\mhook\disasm-lib\cpu.h">
-      <Filter>mhook</Filter>
-    </ClInclude>
-    <ClInclude Include="..\mhook\disasm-lib\disasm.h">
-      <Filter>mhook</Filter>
-    </ClInclude>
-    <ClInclude Include="..\mhook\disasm-lib\disasm_x86.h">
-      <Filter>mhook</Filter>
-    </ClInclude>
-    <ClInclude Include="..\mhook\disasm-lib\disasm_x86_tables.h">
-      <Filter>mhook</Filter>
-    </ClInclude>
-    <ClInclude Include="..\mhook\disasm-lib\misc.h">
-      <Filter>mhook</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="chrome_elf.def" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="mhook">
-      <UniqueIdentifier>{5f92c477-8601-4c3c-a1e2-b55ebd230af4}</UniqueIdentifier>
+    <Filter Include="hookapi">
+      <UniqueIdentifier>{6dec95b4-4fa2-4d85-9de5-8a6af4d6bb2d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

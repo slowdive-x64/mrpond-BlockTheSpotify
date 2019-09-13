@@ -11,9 +11,9 @@ int CrashForException_ExportThunk (EXCEPTION_POINTERS* info) {
 }
 void DisableHook () {}
 
-uint32_t DrainLog (uint8_t* buffer,
-	uint32_t buffer_size,
-	uint32_t* log_remaining) {
+UINT32 DrainLog (UINT8* buffer,
+	UINT32 buffer_size,
+	UINT32* log_remaining) {
 
 	return 0;
 }
@@ -25,8 +25,8 @@ bool DumpHungProcessWithPtype_ExportThunk (HANDLE process_handle,
 
 void DumpProcessWithoutCrash (void* task_port) {}
 
-int32_t GetApplyHookResult () { return 0; }
-uint32_t GetBlockedModulesCount () { return 0; }
+INT32 GetApplyHookResult () { return 0; }
+UINT32 GetBlockedModulesCount () { return 0; }
 
 size_t GetCrashReports_ExportThunk (void* reports,
 	size_t reports_size) {
@@ -39,8 +39,8 @@ const wchar_t* GetCrashpadDatabasePath_ExportThunk () {
 void* GetHandleVerifier () {
 	return NULL;
 }
-uint32_t GetInstallDetailsPayload () { return 0; }
-uint32_t GetUniqueBlockedModulesCount () { return 0; }
+UINT32 GetInstallDetailsPayload () { return 0; }
+UINT32 GetUniqueBlockedModulesCount () { return 0; }
 bool GetUserDataDirectoryThunk (wchar_t* user_data_dir,
 	size_t user_data_dir_length,
 	wchar_t* invalid_user_data_dir,

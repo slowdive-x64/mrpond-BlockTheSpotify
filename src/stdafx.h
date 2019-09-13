@@ -8,19 +8,12 @@
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files:
-#include <windows.h>
+#include <Windows.h>
 
 
 
 // TODO: reference additional headers your program requires here
-#include <iostream>
-#include <algorithm>
-#include <Psapi.h>
-#include <WinSock2.h>
-#include <ws2tcpip.h>
+#include <winsock.h>
 #include <winhttp.h>
 #include "HookApi.h"
 #include "hosts.h"
-#pragma comment(lib, "Psapi.lib")
-#pragma comment(lib, "ws2_32.lib") 
-#pragma comment(lib, "Winhttp.lib")

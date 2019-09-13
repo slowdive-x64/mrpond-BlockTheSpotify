@@ -8,13 +8,9 @@ Please do support Spotify by using premium!!!!
 
 **Last updated:** 13 September 2019
 
-**Last tested version:** 1.1.14.475.g566c8beb
+**Last tested version:** 1.1.15.448.g00fba0e3
 
 ### Important Notice
-
-Not tested on 1.1.15.448.g00fba0e3 yet, 
-
-since it not public release in my region yet
 
 This dll is virus free,
 

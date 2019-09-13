@@ -486,8 +486,10 @@ static const char* blockhost[] = {
 		"beacons5.gvt2.com",
 		"beacons5.gvt3.com",
 		"clients2.google.com",
-		"crashdump.spotify.com"
-		//"cache.spotify.com"
+		"crashdump.spotify.com",
+		"adeventtracker.spotify.com", /* ad tracker */
+		"dealer.spotify.com" /* unknown */
+		//"cache.spotify.com" /* not working */
 };
 
 #endif /* _HOSTS_H */

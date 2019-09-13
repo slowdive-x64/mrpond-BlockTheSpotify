@@ -4,9 +4,9 @@ Please do support Spotify by using premium!!!!
 
 ## Video, audio & banner adblock/skip for Spotify
 
-**Current Version:** 0.21
+**Current Version:** 0.22
 
-**Last updated:** 13 September 2019
+**Last updated:** 14 September 2019
 
 **Last tested version:** 1.1.15.448.g00fba0e3
 
@@ -15,6 +15,10 @@ Please do support Spotify by using premium!!!!
 This dll is virus free,
 
 You can check and recompile it from source.
+
+chrome_elf.dll got replace by spotify installer each time it updated.
+
+make sure you replace the dll again.
 
 --
 

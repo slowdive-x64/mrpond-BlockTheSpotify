@@ -14,11 +14,16 @@ int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 	//"spclient.wg.spotify.com"
 	//POST
 	//L"/ad-logic/state/config"
-	//L"/playlist-publish/v1/subscription/playlist/xxxxx"
-	//GET
+	//L"/ad-logic/flashpoint"	/* this is ad between song/popup */
+	//L"/playlist-publish/v1/subscription/playlist/xxxxx" /* sent when change playlist */
+	//GET /* payload are base64 */
 	//L"/ads/v2/config?payload=xxxxx"
+	//L"/ads/v1/ads/hpto?payload=xxxxx"	
 	//L"/ads/v1/ads/leaderboard?payload=xxxxx
-	//HEADER
+	//L"/pagead/conversion/?ai=xxxxx"
+	//L"/monitoring?pload=xxxxx"
+	//L"/pcs/view?xai=xxxxx"
+	//HEADER /* add into every request */
 	//L"User-Agent: Spotify/111500448 Win32/0 (PC laptop)"
 	//L"Authorization: Bearer xxxxx"
 
@@ -31,9 +36,11 @@ int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 			ppwszAcceptTypes,
 			dwFlags);
 	}
-	return NULL;
+	else {
+		// the failed will retry.. not good.
+		return 0;
+	}
 }
-
 
 int WINAPI getaddrinfohook (DWORD RetAddr,
 	pfngetaddrinfo fngetaddrinfo,
@@ -48,4 +55,55 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 			return WSANO_RECOVERY;
 	}
 	return fngetaddrinfo (nodename, servname, hints, res);
+}
+
+int WINAPI winhttpsendrequesthook (DWORD RetAddr,
+	pfnwinhttpsendrequest fnwinhttpsendrequest,
+	HINTERNET hRequest,
+	LPCWSTR pwszHeaders,
+	DWORD dwHeadersLength,
+	LPVOID lpOptional,
+	DWORD dwOptionalLength,
+	DWORD dwTotalLength,
+	DWORD_PTR dwContext)
+{
+	return 1;	// return success but nothing sent
+}
+
+int WINAPI winhttpwritedatahook (DWORD RetAddr,
+	pfnwinhttpwritedata fnwinhttpwritedata,
+	HINTERNET hRequest,
+	LPCVOID lpBuffer,
+	DWORD dwNumberOfBytesToWrite,
+	LPDWORD lpdwNumberOfBytesWritten)
+{
+	return 1;	// return success but nothing write
+}
+
+int WINAPI winhttpreceiveresponsehook (DWORD RetAddr,
+	pfnwinhttpreceiveresponse fnwinhttpreceiveresponse,
+	HINTERNET hRequest,
+	LPVOID lpReserved)
+{
+	return 1;	// return success but nothing receive
+}
+
+int WINAPI winhttpquerydataavailablehook (DWORD RetAddr,
+	pfnwinhttpquerydataavailable fnwinhttpquerydataavailable,
+	HINTERNET hRequest,
+	LPDWORD lpdwNumberOfBytesAvailable)
+{
+	//lpdwNumberOfBytesAvailable = 0;
+	return 1;	// return success with 0 byte to read
+}
+
+int WINAPI winhttpsetstatuscallbackhook (DWORD RetAddr,
+	pfnwinhttpsetstatuscallback fnwinhttpsetstatuscallback,
+	HINTERNET hInternet,
+	WINHTTP_STATUS_CALLBACK lpfnInternetCallback,
+	DWORD dwNotificationFlags,
+	DWORD_PTR dwReserved)
+{
+	// lpfnInternetCallback - Set this to NULL to remove the existing callback function.
+	return fnwinhttpsetstatuscallback (hInternet, NULL, dwNotificationFlags, NULL);
 }

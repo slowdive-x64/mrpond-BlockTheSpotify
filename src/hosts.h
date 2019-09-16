@@ -14,6 +14,30 @@ typedef int (__stdcall* pfnwinhttpopenrequest)(HINTERNET hConnect,
 	LPCWSTR* ppwszAcceptTypes,
 	DWORD dwFlags);
 
+typedef int (__stdcall* pfnwinhttpquerydataavailable)(HINTERNET hRequest,
+	LPDWORD lpdwNumberOfBytesAvailable);
+
+typedef int (__stdcall* pfnwinhttpsendrequest)(HINTERNET hRequest,
+	LPCWSTR pwszHeaders,
+	DWORD dwHeadersLength,
+	LPVOID lpOptional,
+	DWORD dwOptionalLength,
+	DWORD dwTotalLength,
+	DWORD_PTR dwContext);
+
+typedef int (__stdcall* pfnwinhttpwritedata) (HINTERNET hRequest,
+	LPCVOID lpBuffer,
+	DWORD dwNumberOfBytesToWrite,
+	LPDWORD lpdwNumberOfBytesWritten);
+
+typedef int (__stdcall* pfnwinhttpreceiveresponse) (HINTERNET hRequest,
+	LPVOID lpReserved);
+
+typedef int (__stdcall* pfnwinhttpsetstatuscallback) (HINTERNET hInternet,
+	WINHTTP_STATUS_CALLBACK lpfnInternetCallback,
+	DWORD dwNotificationFlags,
+	DWORD_PTR dwReserved);
+
 int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 	pfnwinhttpopenrequest fnwinhttpopenrequest,
 	HINTERNET hConnect,
@@ -31,6 +55,40 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 	const char* servname,
 	const struct addrinfo* hints,
 	struct addrinfo** res);
+
+int WINAPI winhttpquerydataavailablehook (DWORD RetAddr, 
+	pfnwinhttpquerydataavailable fnwinhttpquerydataavailable,
+	HINTERNET hRequest,
+	LPDWORD lpdwNumberOfBytesAvailable);
+
+int WINAPI winhttpsendrequesthook (DWORD RetAddr, 
+	pfnwinhttpsendrequest fnwinhttpsendrequest,
+	HINTERNET hRequest,
+	LPCWSTR pwszHeaders,
+	DWORD dwHeadersLength,
+	LPVOID lpOptional,
+	DWORD dwOptionalLength,
+	DWORD dwTotalLength,
+	DWORD_PTR dwContext);
+
+int WINAPI winhttpwritedatahook (DWORD RetAddr,
+	pfnwinhttpwritedata fnwinhttpwritedata,
+	HINTERNET hRequest,
+	LPCVOID lpBuffer,
+	DWORD dwNumberOfBytesToWrite,
+	LPDWORD lpdwNumberOfBytesWritten);
+
+int WINAPI winhttpreceiveresponsehook (DWORD RetAddr,
+	pfnwinhttpreceiveresponse fnwinhttpreceiveresponse,
+	HINTERNET hRequest,
+	LPVOID lpReserved);
+
+int WINAPI winhttpsetstatuscallbackhook (DWORD RetAddr, 
+	pfnwinhttpsetstatuscallback fnwinhttpsetstatuscallback,
+	HINTERNET hInternet,
+	WINHTTP_STATUS_CALLBACK lpfnInternetCallback,
+	DWORD dwNotificationFlags,
+	DWORD_PTR dwReserved);
 
 static const char* blockhost[] = {
 	// fork this if you found more...  I'll check if had time.
@@ -487,6 +545,7 @@ static const char* blockhost[] = {
 		"beacons5.gvt3.com",
 		"clients2.google.com",
 		"crashdump.spotify.com",
+		"invitemedia.com",
 		"adeventtracker.spotify.com", /* ad tracker */
 		"dealer.spotify.com" /* unknown */
 		//"cache.spotify.com" /* not working */

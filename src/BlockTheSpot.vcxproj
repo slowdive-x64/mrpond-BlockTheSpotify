@@ -50,6 +50,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>chrome_elf</TargetName>
     <OutDir>$(ProjectDir)..\</OutDir>
+    <IncludePath>$(ACE_ROOT);$(IncludePath)</IncludePath>
+    <LibraryPath>$(ACE_ROOT)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

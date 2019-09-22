@@ -17,3 +17,4 @@
 *.ipdb
 *.lib
 *.dll
+/src/Debug

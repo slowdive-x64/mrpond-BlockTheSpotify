@@ -27,19 +27,21 @@ int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 	//L"User-Agent: Spotify/111500448 Win32/0 (PC laptop)"
 	//L"Authorization: Bearer xxxxx"
 
-	if (wcsstr (pwszObjectName, L"/playlist-publish/") != 0) {
-		return fnwinhttpopenrequest (hConnect,
-			pwszVerb,
-			pwszObjectName,
-			pwszVersion,
-			pwszReferrer,
-			ppwszAcceptTypes,
-			dwFlags);
+	// should whitelist instead of blacklist.. no time yet.
+	for (size_t i = 0; i < sizeof (blockrequest) / sizeof (blockrequest[0]); i++)
+	{
+		if (wcsstr (pwszObjectName, blockrequest[i]) != 0)
+			return 0;
 	}
-	else {
-		// the failed will retry.. not good.
-		return 0;
-	}
+
+	return fnwinhttpopenrequest (hConnect,
+		pwszVerb,
+		pwszObjectName,
+		pwszVersion,
+		pwszReferrer,
+		ppwszAcceptTypes,
+		dwFlags);
+
 }
 
 int WINAPI getaddrinfohook (DWORD RetAddr,
@@ -49,6 +51,11 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 	const struct addrinfo* hints,
 	struct addrinfo** res)
 {
+	for (size_t i = 0; i < sizeof (whitelist) / sizeof (whitelist[0]); i++)
+	{
+		if (strstr (nodename, whitelist[i]) != 0)
+			return fngetaddrinfo (nodename, servname, hints, res);
+	}
 	for (size_t i = 0; i < sizeof (blockhost) / sizeof (blockhost[0]); i++)
 	{
 		if (strstr (nodename, blockhost[i]) != 0)

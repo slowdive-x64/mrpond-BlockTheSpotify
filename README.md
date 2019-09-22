@@ -4,9 +4,9 @@ Please do support Spotify by using premium!!!!
 
 ## Video, audio & banner adblock/skip for Spotify
 
-**Current Version:** 0.23
+**Current Version:** 0.24
 
-**Last updated:** 16 September 2019
+**Last updated:** 22 September 2019
 
 **Last tested version:** 1.1.15.448.g00fba0e3
 

@@ -38,6 +38,11 @@ typedef int (__stdcall* pfnwinhttpsetstatuscallback) (HINTERNET hInternet,
 	DWORD dwNotificationFlags,
 	DWORD_PTR dwReserved);
 
+typedef int (__stdcall* pfnwinhttpreaddata) (HINTERNET hRequest,
+	LPVOID lpBuffer,
+	DWORD dwNumberOfBytesToRead,
+	LPDWORD lpdwNumberOfBytesRead);
+
 int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 	pfnwinhttpopenrequest fnwinhttpopenrequest,
 	HINTERNET hConnect,
@@ -56,12 +61,12 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 	const struct addrinfo* hints,
 	struct addrinfo** res);
 
-int WINAPI winhttpquerydataavailablehook (DWORD RetAddr, 
+int WINAPI winhttpquerydataavailablehook (DWORD RetAddr,
 	pfnwinhttpquerydataavailable fnwinhttpquerydataavailable,
 	HINTERNET hRequest,
 	LPDWORD lpdwNumberOfBytesAvailable);
 
-int WINAPI winhttpsendrequesthook (DWORD RetAddr, 
+int WINAPI winhttpsendrequesthook (DWORD RetAddr,
 	pfnwinhttpsendrequest fnwinhttpsendrequest,
 	HINTERNET hRequest,
 	LPCWSTR pwszHeaders,
@@ -83,12 +88,19 @@ int WINAPI winhttpreceiveresponsehook (DWORD RetAddr,
 	HINTERNET hRequest,
 	LPVOID lpReserved);
 
-int WINAPI winhttpsetstatuscallbackhook (DWORD RetAddr, 
+int WINAPI winhttpsetstatuscallbackhook (DWORD RetAddr,
 	pfnwinhttpsetstatuscallback fnwinhttpsetstatuscallback,
 	HINTERNET hInternet,
 	WINHTTP_STATUS_CALLBACK lpfnInternetCallback,
 	DWORD dwNotificationFlags,
 	DWORD_PTR dwReserved);
+
+int WINAPI winhttpreaddatahook (DWORD RetAddr,
+	pfnwinhttpreaddata fnwinhttpreaddata,
+	HINTERNET hRequest,
+	LPVOID lpBuffer,
+	DWORD dwNumberOfBytesToRead,
+	LPDWORD lpdwNumberOfBytesRead);
 
 static const char* blockhost[] = {
 	// fork this if you found more...  I'll check if had time.

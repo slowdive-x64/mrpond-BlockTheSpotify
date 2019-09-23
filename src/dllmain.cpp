@@ -10,18 +10,23 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls (hModule);
-		// block the ads banner by hostname.
+		// block ads banner by hostname.
 		InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
-		InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
+		// block ads by manipulate json response.
+		InstallHookApi ("Winhttp.dll", "WinHttpReadData", winhttpreaddatahook);
 
-		// real ads block, no data out. bug on fb login...
+		// ==== archive ====
+		// real (ads) block, no data out. bug on facebook login/search.
 		//InstallHookApi ("Winhttp.dll", "WinHttpSendRequest", winhttpsendrequesthook);
 		//InstallHookApi ("Winhttp.dll", "WinHttpSetStatusCallback", winhttpsetstatuscallbackhook);
+
 		// we don't need it, for future only.
 		//InstallHookApi ("Winhttp.dll", "WinHttpWriteData", winhttpwritedatahook);
 		//InstallHookApi ("Winhttp.dll", "WinHttpReceiveResponse", winhttpreceiveresponsehook);
 		//InstallHookApi ("Winhttp.dll", "WinHttpQueryDataAvailable", winhttpquerydataavailablehook);
 
+		// block ads request but it keep retrying.
+		//InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
 		break;
 	}
 	return TRUE;

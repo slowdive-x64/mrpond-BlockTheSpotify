@@ -53,12 +53,12 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 {
 	for (size_t i = 0; i < sizeof (whitelist) / sizeof (whitelist[0]); i++)
 	{
-		if (strstr (nodename, whitelist[i]) != 0)
+		if (strstr (nodename, whitelist[i]) != NULL)
 			return fngetaddrinfo (nodename, servname, hints, res);
 	}
 	for (size_t i = 0; i < sizeof (blockhost) / sizeof (blockhost[0]); i++)
 	{
-		if (strstr (nodename, blockhost[i]) != 0)
+		if (strstr (nodename, blockhost[i]) != NULL)
 			return WSANO_RECOVERY;
 	}
 	return fngetaddrinfo (nodename, servname, hints, res);
@@ -113,4 +113,26 @@ int WINAPI winhttpsetstatuscallbackhook (DWORD RetAddr,
 {
 	// lpfnInternetCallback - Set this to NULL to remove the existing callback function.
 	return fnwinhttpsetstatuscallback (hInternet, NULL, dwNotificationFlags, NULL);
+}
+
+// withthis you can replace other json response as well
+int WINAPI winhttpreaddatahook (DWORD RetAddr,
+	pfnwinhttpreaddata fnwinhttpreaddata,
+	HINTERNET hRequest,
+	LPVOID lpBuffer,
+	DWORD dwNumberOfBytesToRead,
+	LPDWORD lpdwNumberOfBytesRead)
+{
+	if (!fnwinhttpreaddata (hRequest,
+		lpBuffer,
+		dwNumberOfBytesToRead,
+		lpdwNumberOfBytesRead)) {
+		return false;
+	}
+	char* pdest = strstr ((LPSTR)lpBuffer, "pod");
+	if (pdest != NULL) {
+		//"pod" -> "xod"
+		*pdest = 'x';	
+	}
+	return true;
 }

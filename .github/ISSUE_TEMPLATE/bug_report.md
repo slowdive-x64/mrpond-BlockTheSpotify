@@ -15,4 +15,5 @@ A clear and concise description of what the bug is.
  - Spotify Version: [e.g. 1.1.2.285.ga97985ef]
 
 **Additional context**
+Make sure you use [latest blockthespot](https://github.com/mrpond/BlockTheSpot/releases) before report a bug.
 Add any other context about the problem here. If ad blocking is not working, please include a [ListDLLs](https://docs.microsoft.com/en-us/sysinternals/downloads/listdlls) log by running `listdlls Spotify.exe` with Spotify running in the background.

@@ -168,9 +168,7 @@ static const char* blockhost[] = {
 	"redirector.googlevideo.com",
 	"crashdump.spotify.com",
 	"invitemedia.com",
-	"adeventtracker.spotify.com", /* ad tracker */
-	"dealer.spotify.com",
-	"apresolve.spotify.com"
+	"adeventtracker.spotify.com" /* ad tracker */
 };
 
 static const char* whitelist[] = {
@@ -179,6 +177,9 @@ static const char* whitelist[] = {
 	"ap.spotify.com",
 	"scdn.co",
 	"cache.spotify.com",
+	/* spotify connect */
+	"dealer.spotify.com",
+	"apresolve.spotify.com",
 	/* podcast */
 	"podbean.com",
 	"akamaized.net",

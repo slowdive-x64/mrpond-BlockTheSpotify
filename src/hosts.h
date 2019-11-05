@@ -168,7 +168,8 @@ static const char* blockhost[] = {
 	"redirector.googlevideo.com",
 	"crashdump.spotify.com",
 	"invitemedia.com",
-	"adeventtracker.spotify.com" /* ad tracker */
+	"adeventtracker.spotify.com" /* ad tracker */,
+	"tubemogul.com" /* EU, France : Peuuuur-Noel */
 };
 
 static const char* whitelist[] = {

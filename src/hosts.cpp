@@ -61,6 +61,11 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 		if (strstr (nodename, blockhost[i]) != NULL)
 			return WSANO_RECOVERY;
 	}
+	// log the missing
+	//std::ofstream logfile;
+	//logfile.open ("hostlog.txt", std::ios::out | std::ios::app);
+	//logfile << nodename << '\n';
+	//logfile.close ();
 	return fngetaddrinfo (nodename, servname, hints, res);
 }
 
@@ -129,10 +134,12 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 		lpdwNumberOfBytesRead)) {
 		return false;
 	}
-	char* pdest = strstr ((LPSTR)lpBuffer, "pod");
+	//ZeroMemory (lpBuffer, sizeof (lpBuffer));
+	char* pdest = strstr ((LPSTR)lpBuffer, "{\"pod");
 	if (pdest != NULL) {
 		//"pod" -> "xod"
-		*pdest = 'x';	
+		pdest += 2;
+		*pdest = 'x';
 	}
 	return true;
 }

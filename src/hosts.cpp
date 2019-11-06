@@ -134,12 +134,47 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 		lpdwNumberOfBytesRead)) {
 		return false;
 	}
-	//ZeroMemory (lpBuffer, sizeof (lpBuffer));
-	char* pdest = strstr ((LPSTR)lpBuffer, "{\"pod");
+	ZeroMemory (lpBuffer, sizeof (lpBuffer));
+	return true;
+	/*
+	char* pdest = strstr ((LPSTR)lpBuffer, "{\"sponsored-playlist");
+	if (pdest != NULL) {
+		ZeroMemory (lpBuffer, sizeof (lpBuffer));
+	}
+	std::ofstream logfile;
+	logfile.open ("hostlog.txt", std::ios::out | std::ios::app);
+	logfile << (LPSTR)lpBuffer << '\n';
+	logfile.close ();
+	return true;
+	pdest = strstr ((LPSTR)lpBuffer, "{\"pod");
 	if (pdest != NULL) {
 		//"pod" -> "xod"
 		pdest += 2;
 		*pdest = 'x';
 	}
-	return true;
+	pdest = strstr ((LPSTR)lpBuffer, "\"hpto");
+	if (pdest != NULL) {
+		//"hpto" -> "xpto"
+		pdest += 1;
+		*pdest = 'x';
+	}
+	pdest = strstr ((LPSTR)lpBuffer, "\"stream");
+	if (pdest != NULL) {
+		//"stream" -> "xtream"
+		pdest += 1;
+		*pdest = 'x';
+	}
+	pdest = strstr ((LPSTR)lpBuffer, "\"leaderboard");
+	if (pdest != NULL) {
+		//"leaderboard" -> "xeaderboard"
+		pdest += 1;
+		*pdest = 'x';
+	}
+	pdest = strstr ((LPSTR)lpBuffer, "\"billboard");
+	if (pdest != NULL) {
+		//"billboard" -> "xillboard"
+		pdest += 1;
+		*pdest = 'x';
+	}
+	*/
 }

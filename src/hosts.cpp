@@ -142,10 +142,12 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 	if (pdest != NULL) {
 		return true;
 	}
-	ZeroMemory (lpBuffer, sizeof (lpBuffer));
+	//std::string data ((char*)lpBuffer, dwNumberOfBytesToRead);
+	SecureZeroMemory (lpBuffer, dwNumberOfBytesToRead);
 	//std::ofstream logfile;
 	//logfile.open ("hostlog.txt", std::ios::out | std::ios::app);
-	//logfile << (LPSTR)lpBuffer << '\n';
+	//logfile << "Byte count: " << dwNumberOfBytesToRead << '\n';
+	//logfile << data << '\n';
 	//logfile.close ();
 	return true;
 }

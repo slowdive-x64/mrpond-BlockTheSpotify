@@ -15,6 +15,8 @@
 // TODO: reference additional headers your program requires here
 #include <winsock2.h>
 #include <winhttp.h>
-//#include <fstream>
+#ifdef _DEBUG
+#include <fstream>
+#endif
 #include "HookApi.h"
 #include "hosts.h"

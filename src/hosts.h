@@ -6,53 +6,12 @@ typedef int (__stdcall* pfngetaddrinfo)(const char* nodename,
 	const struct addrinfo* hints,
 	struct addrinfo** res);
 
-typedef int (__stdcall* pfnwinhttpopenrequest)(HINTERNET hConnect,
-	LPCWSTR pwszVerb,
-	LPCWSTR pwszObjectName,
-	LPCWSTR pwszVersion,
-	LPCWSTR pwszReferrer,
-	LPCWSTR* ppwszAcceptTypes,
-	DWORD dwFlags);
-
-typedef int (__stdcall* pfnwinhttpquerydataavailable)(HINTERNET hRequest,
-	LPDWORD lpdwNumberOfBytesAvailable);
-
-typedef int (__stdcall* pfnwinhttpsendrequest)(HINTERNET hRequest,
-	LPCWSTR pwszHeaders,
-	DWORD dwHeadersLength,
-	LPVOID lpOptional,
-	DWORD dwOptionalLength,
-	DWORD dwTotalLength,
-	DWORD_PTR dwContext);
-
-typedef int (__stdcall* pfnwinhttpwritedata) (HINTERNET hRequest,
-	LPCVOID lpBuffer,
-	DWORD dwNumberOfBytesToWrite,
-	LPDWORD lpdwNumberOfBytesWritten);
-
-typedef int (__stdcall* pfnwinhttpreceiveresponse) (HINTERNET hRequest,
-	LPVOID lpReserved);
-
-typedef int (__stdcall* pfnwinhttpsetstatuscallback) (HINTERNET hInternet,
-	WINHTTP_STATUS_CALLBACK lpfnInternetCallback,
-	DWORD dwNotificationFlags,
-	DWORD_PTR dwReserved);
 
 typedef int (__stdcall* pfnwinhttpreaddata) (HINTERNET hRequest,
 	LPVOID lpBuffer,
 	DWORD dwNumberOfBytesToRead,
 	LPDWORD lpdwNumberOfBytesRead);
 
-int WINAPI winhttpopenrequesthook (DWORD RetAddr,
-	pfnwinhttpopenrequest fnwinhttpopenrequest,
-	HINTERNET hConnect,
-	LPCWSTR pwszVerb,
-	LPCWSTR pwszObjectName,
-	LPCWSTR pwszVersion,
-	LPCWSTR pwszReferrer,
-	LPCWSTR* ppwszAcceptTypes,
-	DWORD dwFlags
-);
 
 int WINAPI getaddrinfohook (DWORD RetAddr,
 	pfngetaddrinfo fngetaddrinfo,
@@ -60,40 +19,6 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 	const char* servname,
 	const struct addrinfo* hints,
 	struct addrinfo** res);
-
-int WINAPI winhttpquerydataavailablehook (DWORD RetAddr,
-	pfnwinhttpquerydataavailable fnwinhttpquerydataavailable,
-	HINTERNET hRequest,
-	LPDWORD lpdwNumberOfBytesAvailable);
-
-int WINAPI winhttpsendrequesthook (DWORD RetAddr,
-	pfnwinhttpsendrequest fnwinhttpsendrequest,
-	HINTERNET hRequest,
-	LPCWSTR pwszHeaders,
-	DWORD dwHeadersLength,
-	LPVOID lpOptional,
-	DWORD dwOptionalLength,
-	DWORD dwTotalLength,
-	DWORD_PTR dwContext);
-
-int WINAPI winhttpwritedatahook (DWORD RetAddr,
-	pfnwinhttpwritedata fnwinhttpwritedata,
-	HINTERNET hRequest,
-	LPCVOID lpBuffer,
-	DWORD dwNumberOfBytesToWrite,
-	LPDWORD lpdwNumberOfBytesWritten);
-
-int WINAPI winhttpreceiveresponsehook (DWORD RetAddr,
-	pfnwinhttpreceiveresponse fnwinhttpreceiveresponse,
-	HINTERNET hRequest,
-	LPVOID lpReserved);
-
-int WINAPI winhttpsetstatuscallbackhook (DWORD RetAddr,
-	pfnwinhttpsetstatuscallback fnwinhttpsetstatuscallback,
-	HINTERNET hInternet,
-	WINHTTP_STATUS_CALLBACK lpfnInternetCallback,
-	DWORD dwNotificationFlags,
-	DWORD_PTR dwReserved);
 
 int WINAPI winhttpreaddatahook (DWORD RetAddr,
 	pfnwinhttpreaddata fnwinhttpreaddata,
@@ -189,11 +114,6 @@ static const char* whitelist[] = {
 	"simplecast.com",
 	"acast.com",
 	"bbc.co.uk"
-};
-
-static const wchar_t* blockrequest[] = {
-	L"/ad-logic/",
-	L"/ads/"
 };
 
 #endif /* _HOSTS_H */

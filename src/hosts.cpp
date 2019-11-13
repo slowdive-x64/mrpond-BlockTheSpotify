@@ -1,5 +1,62 @@
 #include "stdafx.h"
 
+/*
+	support.microsoft.com/en-us/help/831226/
+	how-to-use-the-dnsquery-function-to-resolve-host-names-and-host-addres
+	blogs.msdn.microsoft.com/winsdk/2014/12/17/
+	dnsquery-sample-to-loop-through-multiple-ip-addresses/
+*/
+bool adguard_checkblock (const char* nodename) {
+
+	DNS_STATUS dnsStatus;
+	PDNS_RECORD result = NULL;
+	PIP4_ARRAY pSrvList = NULL;
+	const char* dns_server = "176.103.130.134"; // "Family protection"
+	// adguard.com/en/adguard-dns/overview.html
+	char resolvedIP[INET6_ADDRSTRLEN]{};
+
+	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
+	if (!pSrvList) return false;
+
+	inet_pton (AF_INET,
+		dns_server,
+		&pSrvList->AddrArray[0]);
+	pSrvList->AddrCount = 1;
+
+	dnsStatus = DnsQuery_A (nodename,
+		DNS_TYPE_A,
+		DNS_QUERY_WIRE_ONLY,
+		pSrvList, // Documented as reserved, but can take a PIP4_ARRAY for the DNS server
+		&result,
+		NULL); // Reserved
+
+	if (dnsStatus) return false;
+
+	if (result != NULL) {
+		inet_ntop (AF_INET,
+			&result->Data.A.IpAddress,
+			resolvedIP,
+			sizeof (resolvedIP));
+	}
+
+	if (pSrvList) LocalFree (pSrvList);
+
+	DnsRecordListFree (result,
+		DnsFreeRecordList);
+
+#ifdef _DEBUG
+	// log the missing
+	std::ofstream logfile;
+	logfile.open ("dnslog.txt", std::ios::out | std::ios::app);
+	logfile << "Host: " << nodename << " IP: " << resolvedIP << '\n';
+	logfile.close ();
+#endif
+	if (_stricmp (resolvedIP, "0.0.0.0") == 0) {
+		return true;
+	}
+	return false;
+}
+
 int WINAPI getaddrinfohook (DWORD RetAddr,
 	pfngetaddrinfo fngetaddrinfo,
 	const char* nodename,
@@ -8,23 +65,13 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 	struct addrinfo** res)
 {
 	int ret = fngetaddrinfo (nodename, servname, hints, res);
-	for (size_t i = 0; i < sizeof (whitelist) / sizeof (whitelist[0]); i++)
-	{
-		if (strstr (nodename, whitelist[i]) != NULL)
-			return ret;
+
+	if (_stricmp (nodename, "wpad") == 0)
+		return ret;
+
+	if (adguard_checkblock (nodename)) {
+		return WSANO_RECOVERY;
 	}
-	for (size_t i = 0; i < sizeof (blockhost) / sizeof (blockhost[0]); i++)
-	{
-		if (strstr (nodename, blockhost[i]) != NULL)
-			return WSANO_RECOVERY;
-	}
-#ifdef _DEBUG
-	// log the missing
-	std::ofstream logfile;
-	logfile.open ("hostlog.txt", std::ios::out | std::ios::app);
-	logfile << nodename << '\n';
-	logfile.close ();
-#endif
 	return ret;
 }
 

@@ -27,4 +27,17 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 	DWORD dwNumberOfBytesToRead,
 	LPDWORD lpdwNumberOfBytesRead);
 
+static const char* blockhost[] = {
+	// fork this if you found more...  I'll check if had time.
+	"google",
+	"2mdn.net"
+};
+
+/*
+adservice.google.co.th
+adservice.google.com
+gcdn.2mdn.net
+s0.2mdn.net
+r4---sn-30a7yn7r.c.2mdn.net
+*/
 #endif /* _HOSTS_H */

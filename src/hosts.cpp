@@ -9,7 +9,7 @@
 bool adguard_checkblock (const char* nodename) {
 
 	DNS_STATUS dnsStatus;
-	PDNS_RECORD result = NULL;
+	PDNS_RECORD QueryResult, p;
 	PIP4_ARRAY pSrvList = NULL;
 	const char* dns_server = "176.103.130.134"; // "Family protection"
 	// adguard.com/en/adguard-dns/overview.html
@@ -26,34 +26,34 @@ bool adguard_checkblock (const char* nodename) {
 	dnsStatus = DnsQuery_A (nodename,
 		DNS_TYPE_A,
 		DNS_QUERY_WIRE_ONLY,
-		pSrvList, // Documented as reserved, but can take a PIP4_ARRAY for the DNS server
-		&result,
+		pSrvList,
+		&QueryResult,
 		NULL); // Reserved
 
 	if (dnsStatus) return false;
 
-	if (result != NULL) {
+	p = QueryResult;
+
+	while (p) {
 		inet_ntop (AF_INET,
-			&result->Data.A.IpAddress,
+			&p->Data.A.IpAddress,
 			resolvedIP,
 			sizeof (resolvedIP));
+		if (_stricmp (resolvedIP, "0.0.0.0") == 0)
+			return true; // AdGuard Block
+		p = p->pNext;
 	}
 
 	if (pSrvList) LocalFree (pSrvList);
-
-	DnsRecordListFree (result,
-		DnsFreeRecordList);
+	DnsRecordListFree (QueryResult, DnsFreeRecordList);
 
 #ifdef _DEBUG
 	// log the missing
 	std::ofstream logfile;
-	logfile.open ("dnslog.txt", std::ios::out | std::ios::app);
+	logfile.open ("log_dnsquery.txt", std::ios::out | std::ios::app);
 	logfile << "Host: " << nodename << " IP: " << resolvedIP << '\n';
 	logfile.close ();
 #endif
-	if (_stricmp (resolvedIP, "0.0.0.0") == 0) {
-		return true;
-	}
 	return false;
 }
 
@@ -66,12 +66,25 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 {
 	int ret = fngetaddrinfo (nodename, servname, hints, res);
 
-	if (_stricmp (nodename, "wpad") == 0)
-		return ret;
+	if (_stricmp (nodename, "wpad") == 0) return ret;
 
-	if (adguard_checkblock (nodename)) {
-		return WSANO_RECOVERY;
+	for (size_t i = 0; i < sizeof (blockhost) / sizeof (blockhost[0]); i++)
+	{
+		if (strstr (nodename, blockhost[i]) != NULL)
+			return WSANO_RECOVERY;
 	}
+
+	// issue free here, in the case that some network
+	// maybe block outside dns
+	if (adguard_checkblock (nodename)) return WSANO_RECOVERY;
+
+#ifdef _DEBUG
+	// log the missing
+	std::ofstream logfile;
+	logfile.open ("log_getaddrinfo.txt", std::ios::out | std::ios::app);
+	logfile << nodename << '\n';
+	logfile.close ();
+#endif
 	return ret;
 }
 
@@ -100,7 +113,7 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 #ifdef _DEBUG
 	std::string data ((char*)lpBuffer, dwNumberOfBytesToRead);
 	std::ofstream logfile;
-	logfile.open ("datalog.txt", std::ios::out | std::ios::app);
+	logfile.open ("log_winhttp.txt", std::ios::out | std::ios::app);
 	logfile << "Byte count: " << dwNumberOfBytesToRead << '\n';
 	logfile << data << '\n';
 	logfile.close ();

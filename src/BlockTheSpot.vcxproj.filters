@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="chrome_elf.def" />
+    <None Include="..\README.md" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="hookapi">

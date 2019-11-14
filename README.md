@@ -3,8 +3,8 @@
   <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
-    <strong>Current Version:</strong> 0.32 <br>
-    <strong>Last updated:</strong> 13 November 2019 <br>
+    <strong>Current Version:</strong> 0.33 <br>
+    <strong>Last updated:</strong> 14 November 2019 <br>
     <strong>Last tested version:</strong> 1.1.19.480.g7d17e3ce
   </p>
   <h4 align="center">Important Notice(s)</h4>
@@ -32,3 +32,14 @@
 1. Browse to Spotify installation folder `%APPDATA%/Spotify` 
 2. Simply delete chrome_elf.dll from your Spotify installation
 3. Rename your backup dll to chrome_elf.dll
+
+#### Known Issues and Caveats:
+* Ads Blocking may not work if you had proxy use in network, I'm still working on this
+* Built-in AdGuard DNS lookup, paranoid people may see additional DNS traffic UDP(53) 
+going out to Adguard DNS Server.
+BTS are not bypass your DNS! Here how it work
+1. Look up from your DNS
+2. Check with blacklist
+3. Look up with AdGuard DNS for additional blocking this is only spotify process not system wide
+**if you can't reach AdGuard DNS for some reason, things still working as expected.
+

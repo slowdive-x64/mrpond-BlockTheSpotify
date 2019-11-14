@@ -1,25 +1,29 @@
 #include "stdafx.h"
 
-/*
-	support.microsoft.com/en-us/help/831226/
-	how-to-use-the-dnsquery-function-to-resolve-host-names-and-host-addres
-	blogs.msdn.microsoft.com/winsdk/2014/12/17/
-	dnsquery-sample-to-loop-through-multiple-ip-addresses/
-*/
-bool adguard_checkblock (const char* nodename) {
+#ifdef _DEBUG
+std::ofstream g_DNSLog;
+std::ofstream g_GetAddrLog;
+std::ofstream g_WinHttpLog;
+#endif
 
+
+// support.microsoft.com/en-us/help/831226/
+// how-to-use-the-dnsquery-function-to-resolve-host-names-and-host-addres
+// blogs.msdn.microsoft.com/winsdk/2014/12/17/
+// dnsquery-sample-to-loop-through-multiple-ip-addresses/
+
+bool adguard_dnsblock (const char* nodename) {
 	DNS_STATUS dnsStatus;
 	PDNS_RECORD QueryResult, p;
 	PIP4_ARRAY pSrvList = NULL;
-	const char* dns_server = "176.103.130.134"; // "Family protection"
-	// adguard.com/en/adguard-dns/overview.html
 	char resolvedIP[INET6_ADDRSTRLEN]{};
-
-	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
+	
+	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR,
+		sizeof (IP4_ARRAY));
 	if (!pSrvList) return false;
 
 	inet_pton (AF_INET,
-		dns_server,
+		g_DNSIP, // dns server ip
 		&pSrvList->AddrArray[0]);
 	pSrvList->AddrCount = 1;
 
@@ -29,7 +33,7 @@ bool adguard_checkblock (const char* nodename) {
 		pSrvList,
 		&QueryResult,
 		NULL); // Reserved
-
+	// DnsQuery return 0 - success
 	if (dnsStatus) return false;
 
 	p = QueryResult;
@@ -48,12 +52,18 @@ bool adguard_checkblock (const char* nodename) {
 	DnsRecordListFree (QueryResult, DnsFreeRecordList);
 
 #ifdef _DEBUG
-	// log the missing
-	std::ofstream logfile;
-	logfile.open ("log_dnsquery.txt", std::ios::out | std::ios::app);
-	logfile << "Host: " << nodename << " IP: " << resolvedIP << '\n';
-	logfile.close ();
+	g_DNSLog << "Host: " << nodename
+		<< " IP: " << resolvedIP << '\n';
 #endif
+	return false;
+}
+
+bool blacklist_host (const char* nodename) {
+	for (size_t i = 0; i < sizeof (g_BlockList) / sizeof (g_BlockList[0]); i++)
+	{
+		if (strstr (nodename, g_BlockList[i]) != NULL)
+			return true;
+	}
 	return false;
 }
 
@@ -66,24 +76,19 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 {
 	int ret = fngetaddrinfo (nodename, servname, hints, res);
 
-	if (_stricmp (nodename, "wpad") == 0) return ret;
+	if (nodename == NULL) return ret;
+	// Web Proxy Auto-Discovery (WPAD)
+	if (_stricmp (nodename, "wpad") == 0) return ret; // experimental
+	// change to WSANO_RECOVERY if you want to mess with proxy.
 
-	for (size_t i = 0; i < sizeof (blockhost) / sizeof (blockhost[0]); i++)
-	{
-		if (strstr (nodename, blockhost[i]) != NULL)
-			return WSANO_RECOVERY;
-	}
+	// issue free here, in the case that
+	// adguard dns can't be reach.
+	if (blacklist_host (nodename)) return WSANO_RECOVERY;
 
-	// issue free here, in the case that some network
-	// maybe block outside dns
-	if (adguard_checkblock (nodename)) return WSANO_RECOVERY;
+	if (adguard_dnsblock (nodename)) return WSANO_RECOVERY;
 
 #ifdef _DEBUG
-	// log the missing
-	std::ofstream logfile;
-	logfile.open ("log_getaddrinfo.txt", std::ios::out | std::ios::app);
-	logfile << nodename << '\n';
-	logfile.close ();
+	g_GetAddrLog << nodename << '\n';
 #endif
 	return ret;
 }
@@ -102,23 +107,21 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 		lpdwNumberOfBytesRead)) {
 		return false;
 	}
+
 	char* pdest = strstr ((LPSTR)lpBuffer, "{\"login_url");
 	if (pdest != NULL) {
 		return true;
 	}
+
 	pdest = strstr ((LPSTR)lpBuffer, "{\"credentials");
 	if (pdest != NULL) {
 		return true;
 	}
 #ifdef _DEBUG
 	std::string data ((char*)lpBuffer, dwNumberOfBytesToRead);
-	std::ofstream logfile;
-	logfile.open ("log_winhttp.txt", std::ios::out | std::ios::app);
-	logfile << "Byte count: " << dwNumberOfBytesToRead << '\n';
-	logfile << data << '\n';
-	logfile.close ();
-#else
-	SecureZeroMemory (lpBuffer, dwNumberOfBytesToRead);
+	g_WinHttpLog << "Byte count: " << dwNumberOfBytesToRead << '\n';
+	g_WinHttpLog << data << '\n';
 #endif
+	SecureZeroMemory (lpBuffer, dwNumberOfBytesToRead);
 	return true;
 }

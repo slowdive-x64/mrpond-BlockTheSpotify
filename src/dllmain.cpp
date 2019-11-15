@@ -20,6 +20,8 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 		DisableThreadLibraryCalls (hModule);
 		if (GetPrivateProfileIntA ("Config", "AdGuardDNS", 1, "./config.ini") == 1)
 			g_UseAdGuard = true;
+		else
+			g_UseAdGuard = false;
 		if (GetPrivateProfileIntA ("Config", "Log", 0, "./config.ini") == 1)
 			g_Log = true;
 		if (GetPrivateProfileIntA ("Config", "Skip_wpad", 0, "./config.ini") == 1)

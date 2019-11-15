@@ -17,9 +17,7 @@
 #include <ws2tcpip.h>
 #include <windns.h>
 #include <winhttp.h>
-#ifdef _DEBUG
 #include <fstream>
-#endif
 #include "HookApi.h"
 #include "hosts.h"
 

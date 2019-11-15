@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
-#ifdef _DEBUG
-std::ofstream g_DNSLog;
-std::ofstream g_GetAddrLog;
-std::ofstream g_WinHttpLog;
-#endif
+bool g_UseAdGuard = true;
+bool g_Log = false;
+bool openLog = false;
 
+std::ofstream Log_DNS;
+std::ofstream Log_GetAddr;
+std::ofstream Log_WinHttp;
 
 // support.microsoft.com/en-us/help/831226/
 // how-to-use-the-dnsquery-function-to-resolve-host-names-and-host-addres
@@ -17,7 +18,7 @@ bool adguard_dnsblock (const char* nodename) {
 	PDNS_RECORD QueryResult, p;
 	PIP4_ARRAY pSrvList = NULL;
 	char resolvedIP[INET6_ADDRSTRLEN]{};
-	
+
 	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR,
 		sizeof (IP4_ARRAY));
 	if (!pSrvList) return false;
@@ -51,10 +52,10 @@ bool adguard_dnsblock (const char* nodename) {
 	if (pSrvList) LocalFree (pSrvList);
 	DnsRecordListFree (QueryResult, DnsFreeRecordList);
 
-#ifdef _DEBUG
-	g_DNSLog << "Host: " << nodename
-		<< " IP: " << resolvedIP << '\n';
-#endif
+	if (g_Log) {
+		Log_DNS << "Host: " << nodename
+			<< " IP: " << resolvedIP << '\n';
+	}
 	return false;
 }
 
@@ -84,12 +85,16 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 	// issue free here, in the case that
 	// adguard dns can't be reach.
 	if (blacklist_host (nodename)) return WSANO_RECOVERY;
+	// some people report slowdown
+	if (g_UseAdGuard) {
+		if (adguard_dnsblock (nodename))
+			return WSANO_RECOVERY;
+	}
 
-	if (adguard_dnsblock (nodename)) return WSANO_RECOVERY;
+	if (g_Log) {
+		Log_GetAddr << nodename << '\n';
+	}
 
-#ifdef _DEBUG
-	g_GetAddrLog << nodename << '\n';
-#endif
 	return ret;
 }
 
@@ -117,11 +122,12 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 	if (pdest != NULL) {
 		return true;
 	}
-#ifdef _DEBUG
-	std::string data ((char*)lpBuffer, dwNumberOfBytesToRead);
-	g_WinHttpLog << "Byte count: " << dwNumberOfBytesToRead << '\n';
-	g_WinHttpLog << data << '\n';
-#endif
+	if (g_Log) {
+		std::string data ((char*)lpBuffer, dwNumberOfBytesToRead);
+		Log_WinHttp << "Byte count: " << dwNumberOfBytesToRead << '\n';
+		Log_WinHttp << data << '\n';
+	}
 	SecureZeroMemory (lpBuffer, dwNumberOfBytesToRead);
 	return true;
 }
+

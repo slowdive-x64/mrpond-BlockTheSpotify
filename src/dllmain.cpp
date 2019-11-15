@@ -3,6 +3,8 @@
 
 extern bool g_UseAdGuard;
 extern bool g_Log;
+extern bool g_Skip_wpad;
+
 extern std::ofstream Log_DNS;
 extern std::ofstream Log_GetAddr;
 extern std::ofstream Log_WinHttp;
@@ -20,7 +22,9 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 			g_UseAdGuard = true;
 		if (GetPrivateProfileIntA ("Config", "Log", 0, "./config.ini") == 1)
 			g_Log = true;
-
+		if (GetPrivateProfileIntA ("Config", "Skip_wpad", 0, "./config.ini") == 1)
+			g_Skip_wpad = true;
+		
 		if (g_Log) {
 			Log_DNS.open ("log_dnsquery.txt",
 				std::ios::out | std::ios::app);

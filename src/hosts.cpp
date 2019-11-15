@@ -2,7 +2,7 @@
 
 bool g_UseAdGuard = true;
 bool g_Log = false;
-bool openLog = false;
+bool g_Skip_wpad = false;
 
 std::ofstream Log_DNS;
 std::ofstream Log_GetAddr;
@@ -79,7 +79,7 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 
 	if (nodename == NULL) return ret;
 	// Web Proxy Auto-Discovery (WPAD)
-	if (_stricmp (nodename, "wpad") == 0) return ret; // experimental
+	if (_stricmp (nodename, "wpad") == 0) return g_Skip_wpad ? WSANO_RECOVERY : ret; // experimental
 	// change to WSANO_RECOVERY if you want to mess with proxy.
 
 	// issue free here, in the case that

@@ -33,13 +33,20 @@
 2. Simply delete chrome_elf.dll from your Spotify installation
 3. Rename your backup dll to chrome_elf.dll
 
-#### Known Issues and Caveats:
-* Ads Blocking may not work if you had proxy use in network, I'm still working on this
+#### Note:
 * Built-in AdGuard DNS lookup, paranoid people may see additional DNS traffic UDP(53) 
 going out to Adguard DNS Server.
 BTS are not bypass your DNS! Here how it work
 1. Look up from your DNS
 2. Check with blacklist
-3. Look up with AdGuard DNS for additional blocking this is only spotify process not system wide
+3. Look up with AdGuard DNS for additional blocking
+
+this is only spotify process not system wide
+
 **if you can't reach AdGuard DNS for some reason, things still working as expected.
 
+#### Known Issues and Caveats:
+* Ads Blocking may not work if you had proxy use in network.
+set Skip_wpad in config.ini to 1 may help.
+* Built-in AdGuard DNS lookup, maybe cause application slowdown,
+set AdGuardDNS in config.ini to 0 to turn this feature off.

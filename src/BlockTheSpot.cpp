@@ -12,14 +12,14 @@ int CrashForException_ExportThunk (EXCEPTION_POINTERS* info) {
 void DisableHook () {}
 
 UINT32 DrainLog (UINT8* buffer,
-	UINT32 buffer_size,
-	UINT32* log_remaining) {
+				 UINT32 buffer_size,
+				 UINT32* log_remaining) {
 
 	return 0;
 }
 
 bool DumpHungProcessWithPtype_ExportThunk (HANDLE process_handle,
-	const char* ptype) {
+										   const char* ptype) {
 	return false;
 }
 
@@ -29,7 +29,7 @@ INT32 GetApplyHookResult () { return 0; }
 UINT32 GetBlockedModulesCount () { return 0; }
 
 size_t GetCrashReports_ExportThunk (void* reports,
-	size_t reports_size) {
+									size_t reports_size) {
 	return 0;
 }
 
@@ -42,9 +42,9 @@ void* GetHandleVerifier () {
 UINT32 GetInstallDetailsPayload () { return 0; }
 UINT32 GetUniqueBlockedModulesCount () { return 0; }
 bool GetUserDataDirectoryThunk (wchar_t* user_data_dir,
-	size_t user_data_dir_length,
-	wchar_t* invalid_user_data_dir,
-	size_t invalid_user_data_dir_length) {
+								size_t user_data_dir_length,
+								wchar_t* invalid_user_data_dir,
+								size_t invalid_user_data_dir_length) {
 	return true;
 }
 HANDLE InjectDumpForHungInput_ExportThunk (HANDLE process) {

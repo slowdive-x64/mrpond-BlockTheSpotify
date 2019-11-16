@@ -3,8 +3,8 @@
   <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
-    <strong>Current Version:</strong> 0.34 <br>
-    <strong>Last updated:</strong> 15 November 2019 <br>
+    <strong>Current Version:</strong> 0.35 <br>
+    <strong>Last updated:</strong> 16 November 2019 <br>
     <strong>Last tested version:</strong> 1.1.19.480.g7d17e3ce
   </p>
   <h4 align="center">Important Notice(s)</h4>
@@ -36,14 +36,7 @@
 #### Note:
 * Built-in AdGuard DNS lookup, paranoid people may see additional DNS traffic UDP(53) 
 going out to Adguard DNS Server.
-BTS are not bypass your DNS! Here how it work
-1. Look up from your DNS
-2. Check with blacklist
-3. Look up with AdGuard DNS for additional blocking
-
-this is only spotify process not system wide
-
-**if you can't reach AdGuard DNS for some reason, things still working as expected.
+*if you can't reach AdGuard DNS for some reason, things still working as expected.
 
 #### Known Issues and Caveats:
 * Ads Blocking may not work if you had proxy use in network.

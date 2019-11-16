@@ -10,8 +10,8 @@ extern std::ofstream Log_GetAddr;
 extern std::ofstream Log_WinHttp;
 
 BOOL APIENTRY DllMain (HMODULE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
+					   DWORD  ul_reason_for_call,
+					   LPVOID lpReserved
 )
 {
 	switch (ul_reason_for_call)
@@ -26,14 +26,14 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 			g_Log = true;
 		if (GetPrivateProfileIntA ("Config", "Skip_wpad", 0, "./config.ini") == 1)
 			g_Skip_wpad = true;
-		
+
 		if (g_Log) {
 			Log_DNS.open ("log_dnsquery.txt",
-				std::ios::out | std::ios::app);
+						  std::ios::out | std::ios::app);
 			Log_GetAddr.open ("log_getaddrinfo.txt",
-				std::ios::out | std::ios::app);
+							  std::ios::out | std::ios::app);
 			Log_WinHttp.open ("log_winhttp.txt",
-				std::ios::out | std::ios::app);
+							  std::ios::out | std::ios::app);
 		}
 		// block ads banner by hostname.
 		InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);

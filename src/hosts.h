@@ -1,10 +1,6 @@
 #ifndef _HOSTS_H
 #define _HOSTS_H
 
-// "Family protection"
-// adguard.com/en/adguard-dns/overview.html 
-static const char* g_DNSIP = "176.103.130.134";
-
 typedef int (__stdcall* pfngetaddrinfo)(const char* nodename,
 										const char* servname,
 										const struct addrinfo* hints,

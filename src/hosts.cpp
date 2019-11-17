@@ -19,43 +19,43 @@ bool adguard_dnsblock (const char* nodename) {
 	PIP4_ARRAY pSrvList = NULL;
 	bool isBlock = false;
 
+	if (!g_UseAdGuard) return false;
+	
 	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
 
-	while (pSrvList) {
+	if (pSrvList) {
+		
+		if (0 == InetPtonA (AF_INET,
+							"176.103.130.134", // dns server ip
+							&pSrvList->AddrArray[0])) {
+			// "Family protection"
+			// adguard.com/en/adguard-dns/overview.html 
+			pSrvList->AddrCount = 1;
 
-		if (inet_pton (AF_INET,
-					   g_DNSIP, // dns server ip
-					   &pSrvList->AddrArray[0]) != 1)
-			break;
-		pSrvList->AddrCount = 1;
+			dnsStatus = DnsQuery_A (nodename,
+									DNS_TYPE_A,
+									DNS_QUERY_WIRE_ONLY,
+									pSrvList,
+									&QueryResult,
+									NULL); // Reserved
+			if (0 == dnsStatus) {
+				if (QueryResult) {
+					for (auto p = QueryResult; p; p = p->pNext) {
+						// 0.0.0.0
+						if (p->Data.A.IpAddress == 0)
+							isBlock = true; // AdGuard Block
+					}
+					DnsRecordListFree (QueryResult, DnsFreeRecordList);
+				} // QueryResult
+			} // dnsStatus
+		} // inet_pton
 
-		dnsStatus = DnsQuery_A (nodename,
-								DNS_TYPE_A,
-								DNS_QUERY_WIRE_ONLY,
-								pSrvList,
-								&QueryResult,
-								NULL); // Reserved
+		LocalFree (pSrvList);
 
-		// DnsQuery return 0 - success
-		if (dnsStatus) {
-			if (g_Log) {
-				Log_DNS << nodename << " DNS status: " << dnsStatus
-					<< " GLE: " << GetLastError () << '\n';
-			}
-			break;
+		if (g_Log && isBlock) {
+			Log_DNS << nodename << " blocked" << '\n';
 		}
-
-		if (!QueryResult) break;
-
-		for (auto p = QueryResult; p; p = p->pNext) {
-			// 0.0.0.0
-			if (p->Data.A.IpAddress == 0) isBlock = true; // AdGuard Block
-		}
-		DnsRecordListFree (QueryResult, DnsFreeRecordList);
-		break;
-	}
-
-	if (pSrvList) LocalFree (pSrvList);
+	} // pSrvList
 	return isBlock;
 }
 
@@ -72,24 +72,23 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 								 res);
 
 	// GetAddrInfo return 0 on success
-	if (result != 0) return result;
+	if (0 == result) {
+		// Web Proxy Auto-Discovery (WPAD)
+		if (0 == _stricmp (nodename, "wpad"))
+			return g_Skip_wpad ? WSANO_RECOVERY : result;
 
-	// Web Proxy Auto-Discovery (WPAD)
-	if (_stricmp (nodename, "wpad") == 0)
-		return g_Skip_wpad ? WSANO_RECOVERY : result;
+		if (NULL != strstr (nodename, "google"))
+			return WSANO_RECOVERY;
 
-	if (strstr (nodename, "google") != NULL)
-		return WSANO_RECOVERY;
-
-	// AdGuard DNS
-	if (g_UseAdGuard) {
+		// AdGuard DNS
 		if (adguard_dnsblock (nodename))
 			return WSANO_RECOVERY;
+
+		if (g_Log) {
+			Log_GetAddr << nodename << '\n';
+		}
 	}
 
-	if (g_Log) {
-		Log_GetAddr << nodename << '\n';
-	}
 	return result;
 }
 

@@ -3,8 +3,8 @@
   <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
-    <strong>Current Version:</strong> 0.35 <br>
-    <strong>Last updated:</strong> 16 November 2019 <br>
+    <strong>Current Version:</strong> 0.36 <br>
+    <strong>Last updated:</strong> 17 November 2019 <br>
     <strong>Last tested version:</strong> 1.1.19.480.g7d17e3ce
   </p>
   <h4 align="center">Important Notice(s)</h4>
@@ -26,17 +26,17 @@
 1. Browse to Spotify installation folder `%APPDATA%/Spotify`
 2. Backup existing `chrome_elf.dll` by renaming it (e.g. chrome_elf.bak)
 3. Download [chrome_elf.zip](chrome_elf.zip)
-4. Extract chrome_elf.dll from chrome_elf.zip to that folder. 
+4. Extract chrome_elf.dll, config.ini from chrome_elf.zip to that folder. 
 
 #### Uninstall:
 1. Browse to Spotify installation folder `%APPDATA%/Spotify` 
-2. Simply delete chrome_elf.dll from your Spotify installation
+2. Simply delete chrome_elf.dll, config.ini from your Spotify installation
 3. Rename your backup dll to chrome_elf.dll
 
 #### Note:
 * Built-in AdGuard DNS lookup, paranoid people may see additional DNS traffic UDP(53) 
 going out to Adguard DNS Server.
-*if you can't reach AdGuard DNS for some reason, things still working as expected.
+* if you can't reach AdGuard DNS for some reason, things still working as expected.
 
 #### Known Issues and Caveats:
 * Ads Blocking may not work if you had proxy use in network.

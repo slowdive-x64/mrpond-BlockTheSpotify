@@ -4,6 +4,7 @@
 extern bool g_UseAdGuard;
 extern bool g_Log;
 extern bool g_Skip_wpad;
+extern bool g_WinHttpReadDataFix;
 
 extern std::ofstream Log_DNS;
 extern std::ofstream Log_GetAddr;
@@ -18,14 +19,14 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		DisableThreadLibraryCalls (hModule);
-		if (GetPrivateProfileIntA ("Config", "AdGuardDNS", 1, "./config.ini") == 1)
-			g_UseAdGuard = true;
-		else
+		if (0 == GetPrivateProfileIntA ("Config", "AdGuardDNS", 1, "./config.ini"))
 			g_UseAdGuard = false;
-		if (GetPrivateProfileIntA ("Config", "Log", 0, "./config.ini") == 1)
+		if (0 < GetPrivateProfileIntA ("Config", "Log", 0, "./config.ini"))
 			g_Log = true;
-		if (GetPrivateProfileIntA ("Config", "Skip_wpad", 0, "./config.ini") == 1)
+		if (0 < GetPrivateProfileIntA ("Config", "Skip_wpad", 0, "./config.ini"))
 			g_Skip_wpad = true;
+		if (0 < GetPrivateProfileIntA ("Config", "WinHttpReadDataFix", 0, "./config.ini"))
+			g_WinHttpReadDataFix = true;
 
 		if (g_Log) {
 			Log_DNS.open ("log_dnsquery.txt",
@@ -34,7 +35,10 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 							  std::ios::out | std::ios::app);
 			Log_WinHttp.open ("log_winhttp.txt",
 							  std::ios::out | std::ios::app);
+			if (!g_UseAdGuard)
+				Log_DNS << "AdGuard DNS Disable!\n";
 		}
+		
 		// block ads banner by hostname.
 		InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
 		// block ads by manipulate json response.

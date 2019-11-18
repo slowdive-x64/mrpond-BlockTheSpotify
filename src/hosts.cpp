@@ -3,6 +3,7 @@
 bool g_UseAdGuard = true;
 bool g_Log = false;
 bool g_Skip_wpad = false;
+bool g_WinHttpReadDataFix = false;
 
 std::ofstream Log_DNS;
 std::ofstream Log_GetAddr;
@@ -66,6 +67,16 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 							const struct addrinfo* hints,
 							struct addrinfo** res)
 {
+
+	// Web Proxy Auto-Discovery (WPAD)
+	if (g_Skip_wpad) {
+		if (0 == _stricmp (nodename, "wpad"))
+			return WSANO_RECOVERY;
+	}
+
+	if (NULL != strstr (nodename, "google"))
+		return WSANO_RECOVERY;
+
 	auto result = fngetaddrinfo (nodename,
 								 servname,
 								 hints,
@@ -73,13 +84,6 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 
 	// GetAddrInfo return 0 on success
 	if (0 == result) {
-		// Web Proxy Auto-Discovery (WPAD)
-		if (0 == _stricmp (nodename, "wpad"))
-			return g_Skip_wpad ? WSANO_RECOVERY : result;
-
-		if (NULL != strstr (nodename, "google"))
-			return WSANO_RECOVERY;
-
 		// AdGuard DNS
 		if (adguard_dnsblock (nodename))
 			return WSANO_RECOVERY;
@@ -121,6 +125,8 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 		Log_WinHttp << "Byte count: " << dwNumberOfBytesToRead << '\n';
 		Log_WinHttp << data << '\n';
 	}
+	if (g_WinHttpReadDataFix) return false;
+
 	SecureZeroMemory (lpBuffer, dwNumberOfBytesToRead);
 	return true;
 }

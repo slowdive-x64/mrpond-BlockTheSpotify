@@ -41,7 +41,7 @@ going out to Adguard DNS Server.
 #### Known Issues and Caveats:
 * Ads Blocking may not work if you had proxy use in network.
 set Skip_wpad in config.ini to 1 may help.
-* Ads Blockng on system may not work e.g.(windows 7)
-set WinHttpReadDataFix in config.ini to 1 mayhelp
+* Ads Blocking on system may not work e.g.(windows 7)
+set WinHttpReadDataFix in config.ini to 1 may help.
 * Built-in AdGuard DNS lookup, maybe cause application slowdown,
 set AdGuardDNS in config.ini to 0 to turn this feature off.

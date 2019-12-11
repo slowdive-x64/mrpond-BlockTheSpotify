@@ -19,14 +19,14 @@ bool adguard_dnsblock (const char* nodename) {
 	PDNS_RECORD QueryResult;
 	PIP4_ARRAY pSrvList = NULL;
 	bool isBlock = false;
-
+	char resolvedIP[INET6_ADDRSTRLEN]{};
 	if (!g_UseAdGuard) return false;
-	
+
 	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
 
 	if (pSrvList) {
-		
-		if (0 == InetPtonA (AF_INET,
+		// https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-inetptonw
+		if (1 == InetPtonA (AF_INET,
 							"176.103.130.134", // dns server ip
 							&pSrvList->AddrArray[0])) {
 			// "Family protection"
@@ -43,20 +43,22 @@ bool adguard_dnsblock (const char* nodename) {
 				if (QueryResult) {
 					for (auto p = QueryResult; p; p = p->pNext) {
 						// 0.0.0.0
-						if (p->Data.A.IpAddress == 0)
-							isBlock = true; // AdGuard Block
+						inet_ntop (AF_INET,
+								   &p->Data.A.IpAddress,
+								   resolvedIP,
+								   sizeof (resolvedIP));
+						if (_stricmp (resolvedIP, "0.0.0.0") == 0)
+							isBlock = true; // AdGuard Block		
 					}
 					DnsRecordListFree (QueryResult, DnsFreeRecordList);
 				} // QueryResult
 			} // dnsStatus
 		} // inet_pton
-
 		LocalFree (pSrvList);
-
-		if (g_Log && isBlock) {
-			Log_DNS << nodename << " blocked" << '\n';
-		}
 	} // pSrvList
+	if (g_Log && isBlock) {
+		Log_DNS << nodename << " blocked" << '\n';
+	}
 	return isBlock;
 }
 
@@ -68,22 +70,18 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 							struct addrinfo** res)
 {
 
-	// Web Proxy Auto-Discovery (WPAD)
-	if (g_Skip_wpad) {
-		if (0 == _stricmp (nodename, "wpad"))
-			return WSANO_RECOVERY;
-	}
-
-	if (NULL != strstr (nodename, "google"))
-		return WSANO_RECOVERY;
-
 	auto result = fngetaddrinfo (nodename,
 								 servname,
 								 hints,
 								 res);
+	if (0 == result) { // GetAddrInfo return 0 on success
+		if (NULL != strstr (nodename, "google"))
+			return WSANO_RECOVERY;
 
-	// GetAddrInfo return 0 on success
-	if (0 == result) {
+		// Web Proxy Auto-Discovery (WPAD)
+		if (0 == _stricmp (nodename, "wpad"))
+			return g_Skip_wpad ? WSANO_RECOVERY : result;
+
 		// AdGuard DNS
 		if (adguard_dnsblock (nodename))
 			return WSANO_RECOVERY;
@@ -92,7 +90,6 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 			Log_GetAddr << nodename << '\n';
 		}
 	}
-
 	return result;
 }
 

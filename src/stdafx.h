@@ -18,6 +18,7 @@
 #include <windns.h>
 #include <winhttp.h>
 #include <fstream>
+#include <vector>
 #include "HookApi.h"
 #include "hosts.h"
 

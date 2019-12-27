@@ -8,6 +8,10 @@ bool g_WinHttpReadDataFix = false;
 std::ofstream Log_DNS;
 std::ofstream Log_GetAddr;
 std::ofstream Log_WinHttp;
+extern PIP4_ARRAY pSrvList;
+
+std::vector<std::string> blacklist;
+std::vector<std::string> whitelist;
 
 // support.microsoft.com/en-us/help/831226/
 // how-to-use-the-dnsquery-function-to-resolve-host-names-and-host-addres
@@ -17,48 +21,55 @@ std::ofstream Log_WinHttp;
 bool adguard_dnsblock (const char* nodename) {
 	DNS_STATUS dnsStatus;
 	PDNS_RECORD QueryResult;
-	PIP4_ARRAY pSrvList = NULL;
 	bool isBlock = false;
-	char resolvedIP[INET6_ADDRSTRLEN]{};
+	static int fail_count = 0;
 	if (!g_UseAdGuard) return false;
+	
+	if (fail_count > 5) {
+		if (g_Log) {
+			Log_DNS << "AdGuard DNS lookup disable! fail resolve > 5 times" << '\n';
+		}
+		g_UseAdGuard = false;
+		return false;
+	}
 
-	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
+	for (auto block : blacklist) {
+		if (0 == _stricmp (block.c_str (), nodename))
+			return true;
+	}
+	for (auto allow : whitelist) {
+		if (0 == _stricmp (allow.c_str (), nodename))
+			return false;
+	}
 
-	if (pSrvList) {
-		// https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-inetptonw
-		if (1 == InetPtonA (AF_INET,
-							"176.103.130.134", // dns server ip
-							&pSrvList->AddrArray[0])) {
-			// "Family protection"
-			// adguard.com/en/adguard-dns/overview.html 
-			pSrvList->AddrCount = 1;
+	dnsStatus = DnsQuery (nodename,
+						  DNS_TYPE_A,
+						  DNS_QUERY_WIRE_ONLY,
+						  pSrvList,
+						  &QueryResult,
+						  NULL); // Reserved
 
-			dnsStatus = DnsQuery_A (nodename,
-									DNS_TYPE_A,
-									DNS_QUERY_WIRE_ONLY,
-									pSrvList,
-									&QueryResult,
-									NULL); // Reserved
-			if (0 == dnsStatus) {
-				if (QueryResult) {
-					for (auto p = QueryResult; p; p = p->pNext) {
-						// 0.0.0.0
-						inet_ntop (AF_INET,
-								   &p->Data.A.IpAddress,
-								   resolvedIP,
-								   sizeof (resolvedIP));
-						if (_stricmp (resolvedIP, "0.0.0.0") == 0)
-							isBlock = true; // AdGuard Block		
-					}
-					DnsRecordListFree (QueryResult, DnsFreeRecordList);
-				} // QueryResult
-			} // dnsStatus
-		} // inet_pton
-		LocalFree (pSrvList);
-	} // pSrvList
+	if (0 == dnsStatus) {
+		if (QueryResult) {
+			for (auto p = QueryResult; p; p = p->pNext) {
+				if (0 == p->Data.A.IpAddress) {
+					isBlock = true; // AdGuard Block
+					blacklist.push_back (nodename); // add to blacklist
+					break;	// no more processing
+				}
+			}
+			DnsRecordListFree (QueryResult, DnsFreeRecordList);
+
+			if (!isBlock)
+				whitelist.push_back (nodename); // add to whitelist
+		} // QueryResult
+	} else { // dnsStatus
+		fail_count++;
+	}
 	if (g_Log && isBlock) {
 		Log_DNS << nodename << " blocked" << '\n';
 	}
+
 	return isBlock;
 }
 
@@ -119,7 +130,6 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 	}
 	if (g_Log) {
 		std::string data ((char*)lpBuffer, dwNumberOfBytesToRead);
-		Log_WinHttp << "Byte count: " << dwNumberOfBytesToRead << '\n';
 		Log_WinHttp << data << '\n';
 	}
 	if (g_WinHttpReadDataFix) return false;

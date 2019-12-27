@@ -16,6 +16,7 @@
       <Filter>hookapi</Filter>
     </ClInclude>
     <ClInclude Include="hosts.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="chrome_elf.def" />
@@ -25,5 +26,8 @@
     <Filter Include="hookapi">
       <UniqueIdentifier>{6dec95b4-4fa2-4d85-9de5-8a6af4d6bb2d}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
 </Project>

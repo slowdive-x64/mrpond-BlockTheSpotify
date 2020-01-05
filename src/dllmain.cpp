@@ -9,10 +9,11 @@ extern bool g_WinHttpReadDataFix;
 extern std::ofstream Log_DNS;
 extern std::ofstream Log_GetAddr;
 extern std::ofstream Log_WinHttp;
+extern std::vector<std::string> blacklist;
 
-PIP4_ARRAY pSrvList = NULL;
+PIP4_ARRAY pSrvList = nullptr;
 
-void Init_config () {
+void init_config () {
 	if (0 == GetPrivateProfileInt ("Config", "AdGuardDNS", 1, "./config.ini"))
 		g_UseAdGuard = false;
 	if (0 < GetPrivateProfileInt ("Config", "Log", 0, "./config.ini"))
@@ -23,7 +24,7 @@ void Init_config () {
 		g_WinHttpReadDataFix = true;
 }
 
-void Init_log () {
+void init_log () {
 	Log_DNS.open ("log_dnsquery.txt", std::ios::out | std::ios::app);
 	Log_GetAddr.open ("log_getaddrinfo.txt", std::ios::out | std::ios::app);
 	Log_WinHttp.open ("log_winhttp.txt", std::ios::out | std::ios::app);
@@ -32,9 +33,9 @@ void Init_log () {
 		Log_DNS << "AdGuard DNS Disable!\n";
 }
 
-void Init_DNS () {
+void init_DNS () {
 	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
-	if (pSrvList) {
+	if (nullptr != pSrvList) {
 		// https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-inetptonw
 		if (1 == InetPton (AF_INET,
 						   "176.103.130.134", // dns server ip
@@ -42,11 +43,13 @@ void Init_DNS () {
 			// "Family protection"
 			// adguard.com/en/adguard-dns/overview.html 
 			pSrvList->AddrCount = 1;
-			return;
 		}
 	}
-	//
-	g_UseAdGuard = false;
+	else {
+		if (g_Log)
+			Log_DNS << "AdGuard DNS Disable - pSrvList LocalAlloc failed!\n";
+		g_UseAdGuard = false;
+	}
 }
 
 BOOL APIENTRY DllMain (HMODULE hModule,
@@ -54,29 +57,32 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 					   LPVOID lpReserved
 )
 {
-	// only utility process and main process
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		if (strstr (GetCommandLine (), "--type=utility") || !strstr (GetCommandLine (), "--type=")) {
-			Init_config ();
-			if (g_UseAdGuard) Init_DNS ();
-			if (g_Log) Init_log ();
+	if (strstr (GetCommandLine (), "--type=utility") || 
+		!strstr (GetCommandLine (), "--type=")) {
+
+		switch (ul_reason_for_call)
+		{
+		case DLL_PROCESS_ATTACH:
+			init_config ();
+			if (g_Log) init_log ();
+			if (g_UseAdGuard) init_DNS ();
+			// Web Proxy Auto-Discovery (WPAD)
+			if (g_Skip_wpad) blacklist.push_back ("wpad");
 			// block ads banner by hostname.
 			InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
 			// block ads by manipulate json response.
 			InstallHookApi ("Winhttp.dll", "WinHttpReadData", winhttpreaddatahook);
+			break;
+		case DLL_PROCESS_DETACH:
+			if (g_Log) {
+				Log_DNS.close ();
+				Log_GetAddr.close ();
+				Log_WinHttp.close ();
+			}
+			if (nullptr != pSrvList)
+				LocalFree (pSrvList);
+			break;
 		}
-		break;
-	case DLL_PROCESS_DETACH:
-		if (g_Log) {
-			Log_DNS.close ();
-			Log_GetAddr.close ();
-			Log_WinHttp.close ();
-		}
-		if (pSrvList)
-			LocalFree (pSrvList);
-		break;
 	}
 	return TRUE;
 }

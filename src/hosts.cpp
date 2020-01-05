@@ -24,22 +24,13 @@ bool adguard_dnsblock (const char* nodename) {
 	bool isBlock = false;
 	static int fail_count = 0;
 	if (!g_UseAdGuard) return false;
-	
+
 	if (fail_count > 5) {
 		if (g_Log) {
 			Log_DNS << "AdGuard DNS lookup disable! fail resolve > 5 times" << '\n';
 		}
 		g_UseAdGuard = false;
 		return false;
-	}
-
-	for (auto block : blacklist) {
-		if (0 == _stricmp (block.c_str (), nodename))
-			return true;
-	}
-	for (auto allow : whitelist) {
-		if (0 == _stricmp (allow.c_str (), nodename))
-			return false;
 	}
 
 	dnsStatus = DnsQuery (nodename,
@@ -54,16 +45,13 @@ bool adguard_dnsblock (const char* nodename) {
 			for (auto p = QueryResult; p; p = p->pNext) {
 				if (0 == p->Data.A.IpAddress) {
 					isBlock = true; // AdGuard Block
-					blacklist.push_back (nodename); // add to blacklist
 					break;	// no more processing
 				}
 			}
-			DnsRecordListFree (QueryResult, DnsFreeRecordList);
-
-			if (!isBlock)
-				whitelist.push_back (nodename); // add to whitelist
+			DnsRecordListFree (QueryResult, DnsFreeRecordList);			
 		} // QueryResult
-	} else { // dnsStatus
+	}
+	else { // dnsStatus
 		fail_count++;
 	}
 	if (g_Log && isBlock) {
@@ -80,25 +68,36 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 							const struct addrinfo* hints,
 							struct addrinfo** res)
 {
-
 	auto result = fngetaddrinfo (nodename,
 								 servname,
 								 hints,
 								 res);
+
 	if (0 == result) { // GetAddrInfo return 0 on success
-		if (NULL != strstr (nodename, "google"))
+
+		if (nullptr != strstr (nodename, "google"))
 			return WSANO_RECOVERY;
 
-		// Web Proxy Auto-Discovery (WPAD)
-		if (0 == _stricmp (nodename, "wpad"))
-			return g_Skip_wpad ? WSANO_RECOVERY : result;
+		for (auto block : blacklist) {
+			if (0 == _stricmp (block.c_str (), nodename))
+				return WSANO_RECOVERY;
+		}
+
+		for (auto allow : whitelist) {
+			if (0 == _stricmp (allow.c_str (), nodename))
+				return result;
+		}
 
 		// AdGuard DNS
-		if (adguard_dnsblock (nodename))
+		if (adguard_dnsblock (nodename)) {
+			blacklist.push_back (nodename); // add to blacklist
 			return WSANO_RECOVERY;
-
-		if (g_Log) {
-			Log_GetAddr << nodename << '\n';
+		}
+		else {
+			whitelist.push_back (nodename); // add to whitelist
+			if (g_Log) {
+				Log_GetAddr << nodename << '\n';
+			}
 		}
 	}
 	return result;
@@ -120,12 +119,12 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 	}
 
 	char* pdest = strstr ((LPSTR)lpBuffer, "{\"login_url");
-	if (pdest != NULL) {
+	if (nullptr != pdest) {
 		return true;
 	}
 
 	pdest = strstr ((LPSTR)lpBuffer, "{\"credentials");
-	if (pdest != NULL) {
+	if (nullptr != pdest) {
 		return true;
 	}
 	if (g_Log) {

@@ -27,7 +27,7 @@ bool adguard_dnsblock (const char* nodename) {
 
 	if (fail_count > 5) {
 		if (g_Log) {
-			Log_DNS << "AdGuard DNS lookup disable! fail resolve > 5 times" << '\n';
+			Log_DNS << "AdGuard DNS lookup disable! fail resolve > 5 times" << std::endl;
 		}
 		g_UseAdGuard = false;
 		return false;
@@ -48,19 +48,42 @@ bool adguard_dnsblock (const char* nodename) {
 					break;	// no more processing
 				}
 			}
-			DnsRecordListFree (QueryResult, DnsFreeRecordList);			
+			DnsRecordListFree (QueryResult, DnsFreeRecordList);
 		} // QueryResult
 	}
 	else { // dnsStatus
 		fail_count++;
 	}
 	if (g_Log && isBlock) {
-		Log_DNS << nodename << " blocked" << '\n';
+		Log_DNS << nodename << " blocked" << std::endl;
 	}
 
 	return isBlock;
 }
 
+bool checkBlock (const char* nodename) {
+
+	if (nullptr != strstr (nodename, "google"))
+		return true;
+
+	for (auto allow : whitelist) {
+		if (0 == _stricmp (allow.c_str (), nodename))
+			return false;
+	}
+
+	for (auto block : blacklist) {
+		if (0 == _stricmp (block.c_str (), nodename))
+			return true;
+	}
+
+	// AdGuard DNS
+	if (adguard_dnsblock (nodename)) {
+		blacklist.push_back (nodename); // add to blacklist
+		return true;
+	}
+
+	return false;
+}
 int WINAPI getaddrinfohook (DWORD RetAddr,
 							pfngetaddrinfo fngetaddrinfo,
 							const char* nodename,
@@ -73,30 +96,13 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 								 hints,
 								 res);
 
+	addrinfo* p = *res;
 	if (0 == result) { // GetAddrInfo return 0 on success
-
-		if (nullptr != strstr (nodename, "google"))
-			return WSANO_RECOVERY;
-
-		for (auto block : blacklist) {
-			if (0 == _stricmp (block.c_str (), nodename))
-				return WSANO_RECOVERY;
-		}
-
-		for (auto allow : whitelist) {
-			if (0 == _stricmp (allow.c_str (), nodename))
-				return result;
-		}
-
-		// AdGuard DNS
-		if (adguard_dnsblock (nodename)) {
-			blacklist.push_back (nodename); // add to blacklist
-			return WSANO_RECOVERY;
-		}
-		else {
-			whitelist.push_back (nodename); // add to whitelist
+		if (nullptr != p && checkBlock (nodename)) {
+			struct sockaddr_in* ipv4 = (struct sockaddr_in*)p->ai_addr;
+			InetPton (AF_INET, "0.0.0.0", &(ipv4->sin_addr));
 			if (g_Log) {
-				Log_GetAddr << nodename << '\n';
+				Log_GetAddr << nodename << " blocked" << std::endl;
 			}
 		}
 	}
@@ -127,13 +133,14 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 	if (nullptr != pdest) {
 		return true;
 	}
+
 	if (g_Log) {
 		std::string data ((char*)lpBuffer, dwNumberOfBytesToRead);
-		Log_WinHttp << data << '\n';
+		Log_WinHttp << data << std::endl;
 	}
 	if (g_WinHttpReadDataFix) return false;
 
-	SecureZeroMemory (lpBuffer, dwNumberOfBytesToRead);
+	std::fill ((LPSTR)lpBuffer, (LPSTR)lpBuffer + dwNumberOfBytesToRead, 0x20);
 	return true;
 }
 

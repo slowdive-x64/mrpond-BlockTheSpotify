@@ -19,3 +19,4 @@
 *.dll
 /src/Debug
 /config.ini
+*.aps

@@ -57,7 +57,12 @@ bool adguard_dnsblock (const char* nodename) {
 	if (g_Log && isBlock) {
 		Log_DNS << nodename << " blocked" << std::endl;
 	}
-
+	if (isBlock) {
+		blacklist.push_back (nodename); // add to blacklist
+	}
+	else {
+		whitelist.push_back (nodename); // add to whitelist
+	}
 	return isBlock;
 }
 
@@ -78,7 +83,6 @@ bool checkBlock (const char* nodename) {
 
 	// AdGuard DNS
 	if (adguard_dnsblock (nodename)) {
-		blacklist.push_back (nodename); // add to blacklist
 		return true;
 	}
 
@@ -95,10 +99,9 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 								 servname,
 								 hints,
 								 res);
-
 	addrinfo* p = *res;
-	if (0 == result) { // GetAddrInfo return 0 on success
-		if (nullptr != p && checkBlock (nodename)) {
+	if (0 == result && nullptr != p) { // GetAddrInfo return 0 on success
+		if (p->ai_family == AF_INET && checkBlock (nodename)) {
 			struct sockaddr_in* ipv4 = (struct sockaddr_in*)p->ai_addr;
 			InetPton (AF_INET, "0.0.0.0", &(ipv4->sin_addr));
 			if (g_Log) {

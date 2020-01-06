@@ -33,7 +33,8 @@ void init_log () {
 		Log_DNS << "AdGuard DNS Disable!\n";
 }
 
-void init_DNS () {
+bool init_DNS () {
+	if (!g_UseAdGuard) return true;
 	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
 	if (nullptr != pSrvList) {
 		// https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-inetptonw
@@ -43,13 +44,11 @@ void init_DNS () {
 			// "Family protection"
 			// adguard.com/en/adguard-dns/overview.html 
 			pSrvList->AddrCount = 1;
+			return true;
 		}
 	}
-	else {
-		if (g_Log)
-			Log_DNS << "AdGuard DNS Disable - pSrvList LocalAlloc failed!\n";
-		g_UseAdGuard = false;
-	}
+	g_UseAdGuard = false;
+	return false;
 }
 
 BOOL APIENTRY DllMain (HMODULE hModule,
@@ -57,7 +56,7 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 					   LPVOID lpReserved
 )
 {
-	if (strstr (GetCommandLine (), "--type=utility") || 
+	if (strstr (GetCommandLine (), "--type=utility") ||
 		!strstr (GetCommandLine (), "--type=")) {
 
 		switch (ul_reason_for_call)
@@ -65,7 +64,10 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 		case DLL_PROCESS_ATTACH:
 			init_config ();
 			if (g_Log) init_log ();
-			if (g_UseAdGuard) init_DNS ();
+			if (!init_DNS ()) {
+				if (g_Log)
+					Log_DNS << "AdGuard DNS Disable - pSrvList LocalAlloc failed!\n";
+			}
 			// Web Proxy Auto-Discovery (WPAD)
 			if (g_Skip_wpad) blacklist.push_back ("wpad");
 			// block ads banner by hostname.

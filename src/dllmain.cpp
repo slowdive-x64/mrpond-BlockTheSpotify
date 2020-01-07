@@ -9,7 +9,6 @@ extern bool g_WinHttpReadDataFix;
 extern std::ofstream Log_DNS;
 extern std::ofstream Log_GetAddr;
 extern std::ofstream Log_WinHttp;
-extern std::vector<std::string> blacklist;
 
 PIP4_ARRAY pSrvList = nullptr;
 
@@ -68,8 +67,7 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 				if (g_Log)
 					Log_DNS << "AdGuard DNS Disable - pSrvList LocalAlloc failed!\n";
 			}
-			// Web Proxy Auto-Discovery (WPAD)
-			if (g_Skip_wpad) blacklist.push_back ("wpad");
+
 			// block ads banner by hostname.
 			InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
 			// block ads by manipulate json response.

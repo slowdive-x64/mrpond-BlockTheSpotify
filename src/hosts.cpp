@@ -30,8 +30,6 @@ int adguard_dnsblock (const char* nodename) {
 						  &QueryResult,
 						  NULL); // Reserved
 
-	if (0 != dnsStatus) return -1;
-
 	if (0 == dnsStatus) {
 		if (QueryResult) {
 			for (auto p = QueryResult; p; p = p->pNext) {
@@ -42,6 +40,12 @@ int adguard_dnsblock (const char* nodename) {
 			}
 			DnsRecordListFree (QueryResult, DnsFreeRecordList);
 		} // QueryResult
+	}
+	else {
+		if (g_Log)
+			Log_DNS << "AdGuard DNS Error: " << dnsStatus
+			<< " GLE: " << GetLastError () << std::endl;
+		return -1;
 	}
 
 	if (isBlock) {
@@ -68,12 +72,13 @@ bool checkBlock (const char* nodename) {
 		}
 
 		int result = adguard_dnsblock (nodename);
-		if (1 == result) {
+		if (1 == result) { // return 1 block
 			blacklist.push_back (nodename); // add to blacklist
 			return true;
 		}
-		else if (0 == result) {
+		else if (0 == result) { // return 0 not block
 			whitelist.push_back (nodename); // add to whitelist
+			return false;
 		}
 	}
 	return false;

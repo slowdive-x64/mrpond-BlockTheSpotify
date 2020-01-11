@@ -42,12 +42,12 @@ bool init_DNS () {
 	}
 	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
 	if (nullptr != pSrvList) {
-		char DNS_IP[256];
+		char DNS_IP[INET_ADDRSTRLEN];
 		GetPrivateProfileString ("Config",
 								 "AdGuardDNS_IP",
 								 "176.103.130.134",
 								 DNS_IP,
-								 256,
+								 INET_ADDRSTRLEN,
 								 configFile);
 		// https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-inetptonw
 		if (1 == InetPton (AF_INET,

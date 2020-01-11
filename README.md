@@ -38,6 +38,7 @@
 * Built-in AdGuard DNS lookup, paranoid people may see additional DNS traffic UDP(53) 
 going out to Adguard DNS Server.
 * if you can't reach AdGuard DNS for some reason, things still working as expected.
+* You can change Ads Check(blocking)DNS via config.ini AdGuardDNS_IP default are '176.103.130.134'
 
 #### Known Issues and Caveats:
 * Ads banner maybe appear if you network use 'Web Proxy Auto-Discovery Protocol'

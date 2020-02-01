@@ -59,6 +59,9 @@ bool checkBlock (const char* nodename) {
 	if (nullptr != strstr (nodename, "google"))
 		return true;
 
+	if (nullptr != strstr (nodename, "doubleclick."))
+		return true;
+	
 	// AdGuard DNS
 	if (g_UseAdGuard) {
 		for (auto allow : whitelist) {
@@ -144,8 +147,7 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 		Log_WinHttp << data << std::endl;
 	}
 	if (g_WinHttpReadDataFix) return false;
-
-	std::fill ((LPSTR)lpBuffer, (LPSTR)lpBuffer + dwNumberOfBytesToRead, 0x20);
+	memset (lpBuffer, 0x20, dwNumberOfBytesToRead);
 	return true;
 }
 

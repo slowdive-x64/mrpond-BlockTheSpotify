@@ -3,9 +3,9 @@
   <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
-    <strong>Current Version:</strong> 0.43 <br>
-    <strong>Last updated:</strong> 11 January 2020<br>
-    <strong>Last tested version:</strong> 1.1.22.633.g1bab253a
+    <strong>Current Version:</strong> 0.44 <br>
+    <strong>Last updated:</strong> 1 February 2020<br>
+    <strong>Last tested version:</strong> 1.1.24.91.g4ca6d5eb
   </p>
   <h4 align="center">Important Notice(s)</h4>
   <p align="center">
@@ -18,7 +18,7 @@
 * Blocks all banner/video/audio ads within the app
 * Retains friend, vertical video and radio functionality
 * Unlocks the skip function for any track
-* Built-in AdGuard DNS for ads blocking!
+* (Optonal) Built-in AdGuard DNS for ads blocking!
 
 :warning: This mod is for the [**Desktop Application**](https://www.spotify.com/download/windows/) of Spotify on Windows, **not the Microsoft Store version**.
 

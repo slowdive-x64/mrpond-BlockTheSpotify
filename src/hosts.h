@@ -1,5 +1,4 @@
-#ifndef _HOSTS_H
-#define _HOSTS_H
+#pragma once
 
 typedef int (__stdcall* pfngetaddrinfo)(const char* nodename,
 										const char* servname,
@@ -27,4 +26,4 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 								DWORD dwNumberOfBytesToRead,
 								LPDWORD lpdwNumberOfBytesRead);
 
-#endif /* _HOSTS_H */
+//#endif /* _HOSTS_H */

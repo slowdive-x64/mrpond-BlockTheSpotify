@@ -1,6 +1,6 @@
-#ifndef _HOOKAPI_H
-#define _HOOKAPI_H
-
+//#ifndef _HOOKAPI_H
+//#define _HOOKAPI_H
+#pragma once
 
 typedef struct _HOOKENVIRONMENT
 {
@@ -582,4 +582,4 @@ static int table_0F[256] =
 	/* FF */,  -1
 }; // table_0F
 
-#endif
+//#endif

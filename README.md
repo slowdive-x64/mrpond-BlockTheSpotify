@@ -3,8 +3,8 @@
   <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
-    <strong>Current Version:</strong> 0.44 <br>
-    <strong>Last updated:</strong> 1 February 2020<br>
+    <strong>Current Version:</strong> 0.45 <br>
+    <strong>Last updated:</strong> 14 February 2020<br>
     <strong>Last tested version:</strong> 1.1.25.559.g85cf5e4c
   </p>
   <h4 align="center">Important Notice(s)</h4>
@@ -38,7 +38,7 @@
 * Built-in AdGuard DNS lookup, paranoid people may see additional DNS traffic UDP(53) 
 going out to Adguard DNS Server.
 * if you can't reach AdGuard DNS for some reason, things still working as expected.
-* You can change Ads Check(blocking)DNS via config.ini AdGuardDNS_IP default are '176.103.130.134'
+* You can change Ads Check(blocking)DNS via config.ini AdGuardDNS_IP, default IP are '176.103.130.134'
 
 #### Known Issues and Caveats:
 * Ads banner maybe appear if you network use 'Web Proxy Auto-Discovery Protocol'
@@ -47,4 +47,4 @@ set Skip_wpad in config.ini to 1 may help.
 * On windows 7, Ads Blocking may not work
 set WinHttpReadDataFix in config.ini to 1 may help.
 * Built-in AdGuard DNS lookup, maybe cause application slowdown,
-set AdGuardDNS in config.ini to 0 to turn this feature off.
+set AdGuardDNS in config.ini to 0 to turn this feature off but since v0.45 it async.

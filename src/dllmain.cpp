@@ -1,7 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
 
-extern bool g_UseAdGuard;
 extern bool g_Log;
 extern bool g_Skip_wpad;
 extern bool g_WinHttpReadDataFix;
@@ -9,13 +8,16 @@ extern bool g_WinHttpReadDataFix;
 extern std::ofstream Log_DNS;
 extern std::ofstream Log_GetAddr;
 extern std::ofstream Log_WinHttp;
+extern Adblock g_Adsblock;
 
-PIP4_ARRAY pSrvList = nullptr;
 const char* configFile = "./config.ini";
 
 void init_config () {
 	if (0 == GetPrivateProfileInt ("Config", "AdGuardDNS", 1, configFile))
-		g_UseAdGuard = false;
+		g_Adsblock.deactivate ();
+	else
+		g_Adsblock.activate ();
+
 	if (1 == GetPrivateProfileInt ("Config", "Log", 0, configFile))
 		g_Log = true;
 	if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
@@ -35,48 +37,12 @@ void init_log () {
 	}
 }
 
-bool init_DNS () {
-	if (!g_UseAdGuard) {
-		if (g_Log) Log_DNS << "AdGuard DNS Disable!" << std::endl;
-		return true;
-	}
-	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
-	if (nullptr != pSrvList) {
-		char DNS_IP[INET_ADDRSTRLEN];
-		GetPrivateProfileString ("Config",
-								 "AdGuardDNS_IP",
-								 "176.103.130.134",
-								 DNS_IP,
-								 INET_ADDRSTRLEN,
-								 configFile);
-		// https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-inetptonw
-		if (1 == InetPton (AF_INET,
-						   DNS_IP, // dns server ip
-						   &pSrvList->AddrArray[0])) {
-			pSrvList->AddrCount = 1;
-			if (g_Log)
-				Log_DNS << "AdGuard DNS Server - " << DNS_IP << std::endl;
-			return true;
-		}
-		else {
-			if (g_Log)
-				Log_DNS << "AdGuard DNS Disable - InetPton " 
-				<< DNS_IP << " failed!" << std::endl;
-		}
-	}
-	else {
-		if (g_Log)
-			Log_DNS << "AdGuard DNS Disable - "
-			<< "pSrvList LocalAlloc failed!" << std::endl;
-	}
-	return false;
-}
-
 BOOL APIENTRY DllMain (HMODULE hModule,
 					   DWORD  ul_reason_for_call,
 					   LPVOID lpReserved
 )
 {
+	DisableThreadLibraryCalls(hModule);
 	if (strstr (GetCommandLine (), "--type=utility") ||
 		!strstr (GetCommandLine (), "--type=")) {
 
@@ -85,8 +51,10 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 		case DLL_PROCESS_ATTACH:
 			init_config ();
 			init_log ();
-			if (!init_DNS ()) {
-				g_UseAdGuard = false;
+
+			if (false == g_Adsblock.init (configFile)) {
+				if (g_Log) Log_DNS << "AdGuard DNS Disable!" << std::endl;
+				g_Adsblock.deactivate ();
 			}
 
 			// block ads banner by hostname.
@@ -100,8 +68,7 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 				Log_GetAddr.close ();
 				Log_WinHttp.close ();
 			}
-			if (nullptr != pSrvList)
-				LocalFree (pSrvList);
+			g_Adsblock.destroy ();
 			break;
 		}
 	}

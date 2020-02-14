@@ -37,7 +37,7 @@ const wchar_t* GetCrashpadDatabasePath_ExportThunk () {
 	return nullptr;
 }
 void* GetHandleVerifier () {
-	return NULL;
+	return nullptr;
 }
 UINT32 GetInstallDetailsPayload () { return 0; }
 UINT32 GetUniqueBlockedModulesCount () { return 0; }

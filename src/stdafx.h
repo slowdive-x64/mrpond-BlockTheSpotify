@@ -8,7 +8,7 @@
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files:
-#include <Windows.h>
+#include <windows.h>
 
 
 
@@ -19,8 +19,11 @@
 #include <winhttp.h>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+#include <future>
 #include "HookApi.h"
 #include "hosts.h"
+#include "Adblock.h"
 
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "dnsapi.lib")

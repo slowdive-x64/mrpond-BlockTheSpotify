@@ -1,91 +1,13 @@
 #include "stdafx.h"
 
-bool g_UseAdGuard = true;
 bool g_Log = false;
 bool g_Skip_wpad = false;
 bool g_WinHttpReadDataFix = false;
 
-std::ofstream Log_DNS;
 std::ofstream Log_GetAddr;
 std::ofstream Log_WinHttp;
-extern PIP4_ARRAY pSrvList;
 
-std::vector<std::string> blacklist;
-std::vector<std::string> whitelist;
-
-// support.microsoft.com/en-us/help/831226/
-// how-to-use-the-dnsquery-function-to-resolve-host-names-and-host-addres
-// blogs.msdn.microsoft.com/winsdk/2014/12/17/
-// dnsquery-sample-to-loop-through-multiple-ip-addresses/
-
-int adguard_dnsblock (const char* nodename) {
-	DNS_STATUS dnsStatus;
-	PDNS_RECORD QueryResult;
-	bool isBlock = false;
-
-	dnsStatus = DnsQuery (nodename,
-						  DNS_TYPE_A,
-						  DNS_QUERY_WIRE_ONLY,
-						  pSrvList,
-						  &QueryResult,
-						  NULL); // Reserved
-
-	if (0 == dnsStatus) {
-		if (QueryResult) {
-			for (auto p = QueryResult; p; p = p->pNext) {
-				if (INADDR_ANY == p->Data.A.IpAddress) {
-					isBlock = true; // AdGuard Block
-					break;	// no more processing
-				}
-			}
-			DnsRecordListFree (QueryResult, DnsFreeRecordList);
-		} // QueryResult
-	}
-	else {
-		if (g_Log)
-			Log_DNS << "AdGuard DNS Error: " << dnsStatus
-			<< " GLE: " << GetLastError () << std::endl;
-		return -1;
-	}
-
-	if (isBlock) {
-		return 1;
-	}
-	return 0;
-}
-
-bool checkBlock (const char* nodename) {
-
-	if (nullptr != strstr (nodename, "google"))
-		return true;
-
-	if (nullptr != strstr (nodename, "doubleclick."))
-		return true;
-	
-	// AdGuard DNS
-	if (g_UseAdGuard) {
-		for (auto allow : whitelist) {
-			if (0 == _stricmp (allow.c_str (), nodename))
-				return false;
-		}
-
-		for (auto block : blacklist) {
-			if (0 == _stricmp (block.c_str (), nodename))
-				return true;
-		}
-
-		int result = adguard_dnsblock (nodename);
-		if (1 == result) { // return 1 block
-			blacklist.push_back (nodename); // add to blacklist
-			return true;
-		}
-		else if (0 == result) { // return 0 not block
-			whitelist.push_back (nodename); // add to whitelist
-			return false;
-		}
-	}
-	return false;
-}
+extern Adblock g_Adsblock;
 
 int WINAPI getaddrinfohook (DWORD RetAddr,
 							pfngetaddrinfo fngetaddrinfo,
@@ -94,17 +16,27 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 							const struct addrinfo* hints,
 							struct addrinfo** res)
 {
+	auto adguardlookup = std::async (std::launch::async, &Adblock::isblock, g_Adsblock, nodename);
 
 	auto result = fngetaddrinfo (nodename,
 								 servname,
 								 hints,
 								 res);
 
+	bool isBlock = adguardlookup.get ();
+
 	if (0 == result) { // GetAddrInfo return 0 on success
 		// Web Proxy Auto-Discovery (WPAD)
 		if (g_Skip_wpad && 0 == _stricmp (nodename, "wpad"))
 			return WSAHOST_NOT_FOUND;
-		if (checkBlock (nodename)) {
+
+		if (nullptr != strstr (nodename, "google"))
+			return true;
+
+		if (nullptr != strstr (nodename, "doubleclick."))
+			return true;
+
+		if (isBlock) {
 			for (auto ptr = *res; nullptr != ptr; ptr = ptr->ai_next) {
 				auto ipv4 = (struct sockaddr_in*)ptr->ai_addr;
 				ipv4->sin_addr.S_un.S_addr = INADDR_ANY;

@@ -4,10 +4,10 @@ bool g_Log = false;
 bool g_Skip_wpad = false;
 bool g_WinHttpReadDataFix = false;
 
-std::ofstream Log_GetAddr;
 std::ofstream Log_WinHttp;
+extern std::ofstream Log_DNS;
 
-extern Adblock g_Adsblock;
+extern Adsblock g_Adsblock;
 
 int WINAPI getaddrinfohook (DWORD RetAddr,
 							pfngetaddrinfo fngetaddrinfo,
@@ -16,34 +16,23 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 							const struct addrinfo* hints,
 							struct addrinfo** res)
 {
-	auto adguardlookup = std::async (std::launch::async, &Adblock::isblock, g_Adsblock, nodename);
-
+	auto lookup = std::async (std::launch::async, &Adsblock::isblock, g_Adsblock, nodename);
+	// future/async
 	auto result = fngetaddrinfo (nodename,
 								 servname,
 								 hints,
 								 res);
 
-	bool isBlock = adguardlookup.get ();
+	bool isBlock = lookup.get ();
+	if (0 == result && isBlock) { // GetAddrInfo return 0 on success
 
-	if (0 == result) { // GetAddrInfo return 0 on success
-		// Web Proxy Auto-Discovery (WPAD)
-		if (g_Skip_wpad && 0 == _stricmp (nodename, "wpad"))
-			return WSAHOST_NOT_FOUND;
-
-		if (nullptr != strstr (nodename, "google"))
-			return true;
-
-		if (nullptr != strstr (nodename, "doubleclick."))
-			return true;
-
-		if (isBlock) {
-			for (auto ptr = *res; nullptr != ptr; ptr = ptr->ai_next) {
-				auto ipv4 = (struct sockaddr_in*)ptr->ai_addr;
-				ipv4->sin_addr.S_un.S_addr = INADDR_ANY;
-			}
-			if (g_Log) {
-				Log_GetAddr << nodename << " blocked" << std::endl;
-			}
+		for (auto ptr = *res; nullptr != ptr; ptr = ptr->ai_next) {
+			auto ipv4 = (struct sockaddr_in*)ptr->ai_addr;
+			//memset (&ipv4->sin_addr.S_un.S_addr, 0x0, sizeof ULONG);
+			ipv4->sin_addr.S_un.S_addr = INADDR_ANY;
+		}
+		if (g_Log) {
+			Log_DNS << nodename << " blocked" << std::endl;
 		}
 	}
 	return result;
@@ -79,7 +68,8 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 		Log_WinHttp << data << std::endl;
 	}
 	if (g_WinHttpReadDataFix) return false;
-	memset (lpBuffer, 0x20, dwNumberOfBytesToRead);
+	memset (lpBuffer, 0x0, dwNumberOfBytesToRead);
+	//SecureZeroMemory (lpBuffer, dwNumberOfBytesToRead);
 	return true;
 }
 

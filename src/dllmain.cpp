@@ -6,35 +6,39 @@ extern bool g_Skip_wpad;
 extern bool g_WinHttpReadDataFix;
 
 extern std::ofstream Log_DNS;
-extern std::ofstream Log_GetAddr;
 extern std::ofstream Log_WinHttp;
-extern Adblock g_Adsblock;
+extern Adsblock g_Adsblock;
 
-const char* configFile = "./config.ini";
+void init_log () {
+	Log_DNS.open ("log_dnsquery.txt",
+				  std::ios::out | std::ios::app);
+	Log_WinHttp.open ("log_winhttp.txt",
+					  std::ios::out | std::ios::app);
+}
 
 void init_config () {
-	if (0 == GetPrivateProfileInt ("Config", "AdGuardDNS", 1, configFile))
-		g_Adsblock.deactivate ();
-	else
-		g_Adsblock.activate ();
+	const char* configFile = "./config.ini";
+	char IP[INET_ADDRSTRLEN];
 
-	if (1 == GetPrivateProfileInt ("Config", "Log", 0, configFile))
+	if (1 == GetPrivateProfileInt ("Config", "Log", 0, configFile)) {
 		g_Log = true;
+		init_log ();
+	}
 	if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
 		g_Skip_wpad = true;
 	if (1 == GetPrivateProfileInt ("Config", "WinHttpReadDataFix", 0, configFile))
 		g_WinHttpReadDataFix = true;
-}
 
-void init_log () {
-	if (g_Log) {
-		Log_DNS.open ("log_dnsquery.txt",
-					  std::ios::out | std::ios::app);
-		Log_GetAddr.open ("log_getaddrinfo.txt",
-						  std::ios::out | std::ios::app);
-		Log_WinHttp.open ("log_winhttp.txt",
-						  std::ios::out | std::ios::app);
+	if (1 == GetPrivateProfileInt ("Config", "AdGuardDNS", 1, configFile)) {
+		GetPrivateProfileString ("Config",
+								 "AdGuardDNS_IP",
+								 "176.103.130.134",
+								 IP,
+								 INET_ADDRSTRLEN,
+								 configFile);
+		g_Adsblock.setDNSIP (IP);
 	}
+
 }
 
 BOOL APIENTRY DllMain (HMODULE hModule,
@@ -50,12 +54,6 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 		{
 		case DLL_PROCESS_ATTACH:
 			init_config ();
-			init_log ();
-
-			if (false == g_Adsblock.init (configFile)) {
-				if (g_Log) Log_DNS << "AdGuard DNS Disable!" << std::endl;
-				g_Adsblock.deactivate ();
-			}
 
 			// block ads banner by hostname.
 			InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
@@ -65,7 +63,6 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 		case DLL_PROCESS_DETACH:
 			if (g_Log) {
 				Log_DNS.close ();
-				Log_GetAddr.close ();
 				Log_WinHttp.close ();
 			}
 			g_Adsblock.destroy ();

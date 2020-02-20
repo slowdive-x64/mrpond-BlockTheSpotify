@@ -1,73 +1,66 @@
 #include "stdafx.h"
 
 extern bool g_Log;
+extern bool g_Skip_wpad;
+
 std::ofstream Log_DNS;
 
-Adblock g_Adsblock;
+Adsblock g_Adsblock;
 
-Adblock::Adblock () {
-	SecureZeroMemory (dns_ipaddr, sizeof (dns_ipaddr));
-	pSrvList = nullptr;
-	enable = false;
-}
-
-void Adblock::activate () {
-	enable = true;
-}
-void Adblock::deactivate () {
-	enable = false;
-}
-
-bool Adblock::init (const char* configFile) {
-	if (!isEnable ()) {
-		return false;
-	}
+Adsblock::Adsblock () {
+	isActive = false;
 	pSrvList = (PIP4_ARRAY)LocalAlloc (LPTR, sizeof (IP4_ARRAY));
+}
+
+void Adsblock::setDNSIP (const char* ip) {
+
 	if (nullptr != pSrvList) {
-		GetPrivateProfileString ("Config",
-								 "AdGuardDNS_IP",
-								 "176.103.130.134",
-								 dns_ipaddr,
-								 INET_ADDRSTRLEN,
-								 configFile);
+
 		// https://docs.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-inetptonw
 		if (1 == InetPton (AF_INET,
-						   dns_ipaddr, // dns server ip
+						   ip, // dns server ip
 						   &pSrvList->AddrArray[0])) {
 			pSrvList->AddrCount = 1;
 			if (g_Log)
-				Log_DNS << "AdGuard DNS Server - " << dns_ipaddr << std::endl;
-			return true;
+				Log_DNS << "AdGuard DNS Server - " << ip << std::endl;
+			isActive = true;
 		}
 		else {
 			if (g_Log)
 				Log_DNS << "AdGuard DNS Disable - InetPton "
-				<< dns_ipaddr << " failed!" << std::endl;
+				<< ip << " failed!" << std::endl;
 		}
 	}
 	else {
 		if (g_Log)
-			Log_DNS << "AdGuard DNS Disable - "
-			<< "pSrvList LocalAlloc failed!" << std::endl;
+			Log_DNS << __FUNCTION__
+			<< " pSrvList LocalAlloc failed!" << std::endl;
 	}
-	return false;
 }
 
-bool Adblock::isblock (const char* nodename) {
+bool Adsblock::isblock (const char* nodename) {
+
+	// Web Proxy Auto-Discovery (WPAD)
+	if (0 == _stricmp (nodename, "wpad"))
+		return g_Skip_wpad ? true : false;
+
+	if (nullptr != strstr (nodename, "google"))
+		return true;
+
+	if (nullptr != strstr (nodename, "doubleclick."))
+		return true;
 
 	// AdGuard DNS
-	if (isEnable ()) {
+	if (isActive) {
 		for (auto allow : whitelist) {
 			if (0 == _stricmp (allow.c_str (), nodename))
 				return false;
 		}
-
 		for (auto block : blacklist) {
 			if (0 == _stricmp (block.c_str (), nodename))
 				return true;
 		}
-
-		int result = adguardlookup (nodename);
+		int result = lookup (nodename);
 		if (1 == result) { // return 1 block
 			blacklist.push_back (nodename); // add to blacklist
 			return true;
@@ -80,7 +73,7 @@ bool Adblock::isblock (const char* nodename) {
 	return false;
 }
 
-int Adblock::adguardlookup (const char* nodename) {
+int Adsblock::lookup (const char* nodename) {
 
 	bool isBlock = false;
 	DNS_STATUS dnsStatus = 0;
@@ -89,7 +82,7 @@ int Adblock::adguardlookup (const char* nodename) {
 	dnsStatus = DnsQuery (nodename,
 						  DNS_TYPE_A,
 						  DNS_QUERY_WIRE_ONLY,
-						  pSrvList,
+						  Adsblock::pSrvList,
 						  &QueryResult,
 						  NULL); // Reserved
 
@@ -106,7 +99,7 @@ int Adblock::adguardlookup (const char* nodename) {
 	}
 	else {
 		if (g_Log)
-			Log_DNS << "AdGuard DNS Error: " << dnsStatus
+			Log_DNS << __FUNCTION__ << " host:" << nodename << " status:" << dnsStatus
 			<< " GLE: " << GetLastError () << std::endl;
 		return -1;
 	}
@@ -117,10 +110,12 @@ int Adblock::adguardlookup (const char* nodename) {
 	return 0;
 }
 
-void Adblock::destroy () {
-	if (nullptr != pSrvList)
+void Adsblock::destroy () {
+	if (nullptr != pSrvList) {
 		LocalFree (pSrvList);
+		pSrvList = nullptr;
+	}
 }
 
-Adblock::~Adblock () {
+Adsblock::~Adsblock () {
 }

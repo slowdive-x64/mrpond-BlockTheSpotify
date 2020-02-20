@@ -5,22 +5,18 @@
 // blogs.msdn.microsoft.com/winsdk/2014/12/17/
 // dnsquery-sample-to-loop-through-multiple-ip-addresses/
 
-class Adblock {
+class Adsblock {
 public:
-	Adblock::Adblock ();
-	Adblock::~Adblock ();
-	bool init (const char* configFile);
+	Adsblock::Adsblock ();
+	Adsblock::~Adsblock ();
+	void setDNSIP (const char* ip);
 	bool isblock (const char* nodename);
-	bool isEnable () { return enable; };
 	void destroy ();
-	void activate ();
-	void deactivate ();
 
 private:
-	bool enable;
 	PIP4_ARRAY pSrvList;
-	char dns_ipaddr[INET_ADDRSTRLEN];
+	bool isActive;
 	std::vector<std::string> blacklist;
 	std::vector<std::string> whitelist;
-	int adguardlookup (const char* nodename);
+	int lookup (const char* nodename);
 };

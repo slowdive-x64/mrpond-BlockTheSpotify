@@ -5,7 +5,7 @@
   <p align="center">
     <strong>Current Version:</strong> 0.47 <br>
     <strong>Last updated:</strong> 2 March 2020<br>
-    <strong>Last tested version:</strong> 1.1.26.501.gbe11e53b
+    <strong>Last tested version:</strong> 1.1.27.472.gf6574b97
   </p>
   <h4 align="center">Important Notice(s)</h4>
   <p align="center">

@@ -2,12 +2,24 @@
 
 bool g_Log = false;
 bool g_Skip_wpad = false;
-bool g_WinHttpReadDataFix = false;
 
-std::ofstream Log_WinHttp;
-extern std::ofstream Log_DNS;
+std::wofstream Log;
 
-extern Adsblock g_Adsblock;
+bool is_blockhost (const char* nodename) {
+
+	// Web Proxy Auto-Discovery (WPAD)
+	if (0 == _stricmp (nodename, "wpad"))
+		return g_Skip_wpad ? true : false;
+
+	if (nullptr != strstr (nodename, "google"))
+		return true;
+
+	if (nullptr != strstr (nodename, "doubleclick."))
+		return true;
+
+	return false;
+}
+
 
 int WINAPI getaddrinfohook (DWORD RetAddr,
 							pfngetaddrinfo fngetaddrinfo,
@@ -16,7 +28,7 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 							const struct addrinfo* hints,
 							struct addrinfo** res)
 {
-	auto lookup = std::async (std::launch::async, &Adsblock::isblock, g_Adsblock, nodename);
+	auto lookup = std::async (std::launch::async, is_blockhost, nodename);
 	// future/async
 	auto result = fngetaddrinfo (nodename,
 								 servname,
@@ -32,10 +44,23 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 			ipv4->sin_addr.S_un.S_addr = INADDR_ANY;
 		}
 		if (g_Log) {
-			Log_DNS << nodename << " blocked" << std::endl;
+			Log << "getaddrinfo " << nodename << " blocked" << std::endl;
 		}
 	}
 	return result;
+}
+
+bool is_blockrequest (LPCWSTR pwszObjectName) {
+
+	auto pdest = wcsstr (pwszObjectName, L"/ad-logic/");
+	if (nullptr != pdest)
+		return true;
+
+	pdest = wcsstr (pwszObjectName, L"/ads/");
+	if (nullptr != pdest)
+		return true;
+
+	return false;
 }
 
 int WINAPI winhttpopenrequesthook (DWORD RetAddr,
@@ -49,35 +74,12 @@ int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 								   DWORD dwFlags)
 {
 	//"spclient.wg.spotify.com"
-	//POST
-	//L"/ad-logic/state/config"
-	//L"/ad-logic/flashpoint"	/* this is ad between song/popup */
-	//L"/playlist-publish/v1/subscription/playlist/xxxxx" /* sent when change playlist */
-	//GET /* payload are base64 */
-	//L"/ads/v2/config?payload=xxxxx"
-	//L"/ads/v1/ads/hpto?payload=xxxxx"	
-	//L"/ads/v1/ads/leaderboard?payload=xxxxx
-	//L"/pagead/conversion/?ai=xxxxx"
-	//L"/monitoring?pload=xxxxx"
-	//L"/pcs/view?xai=xxxxx"
-	//HEADER /* add into every request */
-	//L"User-Agent: Spotify/111500448 Win32/0 (PC laptop)"
-	//L"Authorization: Bearer xxxxx"
 
 	if (g_Log) {
-		std::wstring wvb (pwszVerb);
-		std::wstring wobj (pwszObjectName);
-		std::string vb (wvb.begin(), wvb.end());
-		std::string obj (wobj.begin(), wobj.end());
-		Log_WinHttp << __FUNCTION__ << " " << vb << " " << obj << std::endl;
+		Log << "WinHttpOpenRequest " << pwszVerb << " " << pwszObjectName << std::endl;
 	}
 
-	auto pdest = wcsstr (pwszObjectName, L"/ad-logic/");
-	if (nullptr != pdest)
-		return 0;
-
-	pdest = wcsstr (pwszObjectName, L"/ads/");
-	if (nullptr != pdest)
+	if (is_blockrequest(pwszObjectName))
 		return 0;
 
 	return fnwinhttpopenrequest (hConnect,
@@ -87,49 +89,4 @@ int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 								 pwszReferrer,
 								 ppwszAcceptTypes,
 								 dwFlags);
-
 }
-
-bool check_pod (LPVOID lpBuffer)
-{
-	char* pdest = strstr ((LPSTR)lpBuffer, "{\"pod");
-	if (nullptr != pdest) {
-		//"pod" -> "xod"
-		pdest += 2;
-		*pdest = 'x';
-		return true;
-	}
-	return false;
-}
-
-// withthis you can replace other json response as well
-int WINAPI winhttpreaddatahook (DWORD RetAddr,
-								pfnwinhttpreaddata fnwinhttpreaddata,
-								HINTERNET hRequest,
-								LPVOID lpBuffer,
-								DWORD dwNumberOfBytesToRead,
-								LPDWORD lpdwNumberOfBytesRead)
-{
-	if (!fnwinhttpreaddata (hRequest,
-							lpBuffer,
-							dwNumberOfBytesToRead,
-							lpdwNumberOfBytesRead)) {
-		return false;
-	}
-
-	//auto future_pod = std::async (std::launch::async, check_pod, lpBuffer);
-
-	if (g_Log) {
-		std::string data ((char*)lpBuffer, dwNumberOfBytesToRead);
-		Log_WinHttp << __FUNCTION__ << " " << data << std::endl;
-	}
-
-	//if (future_pod.get ()) {
-	if (check_pod (lpBuffer)) {
-		//memset (lpBuffer, 0x0, dwNumberOfBytesToRead);
-		return g_WinHttpReadDataFix ? false : true;
-	}
-
-	return true;
-}
-

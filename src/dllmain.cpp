@@ -3,22 +3,16 @@
 
 extern bool g_Log;
 extern bool g_Skip_wpad;
-extern bool g_WinHttpReadDataFix;
 
-extern std::ofstream Log_DNS;
-extern std::ofstream Log_WinHttp;
-extern Adsblock g_Adsblock;
+extern std::wofstream Log;
 
 void init_log () {
-	Log_DNS.open ("log_dnsquery.txt",
+	Log.open ("log.txt",
 				  std::ios::out | std::ios::app);
-	Log_WinHttp.open ("log_winhttp.txt",
-					  std::ios::out | std::ios::app);
 }
 
 void init_config () {
 	const char* configFile = "./config.ini";
-	char IP[INET_ADDRSTRLEN];
 
 	if (1 == GetPrivateProfileInt ("Config", "Log", 0, configFile)) {
 		g_Log = true;
@@ -26,18 +20,6 @@ void init_config () {
 	}
 	if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
 		g_Skip_wpad = true;
-	if (1 == GetPrivateProfileInt ("Config", "WinHttpReadDataFix", 0, configFile))
-		g_WinHttpReadDataFix = true;
-
-	if (1 == GetPrivateProfileInt ("Config", "AdGuardDNS", 1, configFile)) {
-		GetPrivateProfileString ("Config",
-								 "AdGuardDNS_IP",
-								 "176.103.130.134",
-								 IP,
-								 INET_ADDRSTRLEN,
-								 configFile);
-		g_Adsblock.setDNSIP (IP);
-	}
 
 }
 
@@ -58,15 +40,11 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 			InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
 			// block ads banner by hostname.
 			InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
-			// block ads by manipulate json response.
-			InstallHookApi ("Winhttp.dll", "WinHttpReadData", winhttpreaddatahook);
 			break;
 		case DLL_PROCESS_DETACH:
 			if (g_Log) {
-				Log_DNS.close ();
-				Log_WinHttp.close ();
+				Log.close ();
 			}
-			g_Adsblock.destroy ();
 			break;
 		}
 	}

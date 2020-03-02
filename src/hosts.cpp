@@ -7,14 +7,14 @@ std::wofstream Log;
 
 bool is_blockhost (const char* nodename) {
 
+	std::string nnodename (nodename);
 	// Web Proxy Auto-Discovery (WPAD)
-	if (0 == _stricmp (nodename, "wpad"))
+	if (0 == nnodename.compare("wpad"))
 		return g_Skip_wpad ? true : false;
-
-	if (nullptr != strstr (nodename, "google"))
+	
+	if (std::string::npos != nnodename.find ("google"))
 		return true;
-
-	if (nullptr != strstr (nodename, "doubleclick."))
+	if (std::string::npos != nnodename.find ("doubleclick"))
 		return true;
 
 	return false;
@@ -44,20 +44,18 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 			ipv4->sin_addr.S_un.S_addr = INADDR_ANY;
 		}
 		if (g_Log) {
-			Log << "getaddrinfo " << nodename << " blocked" << std::endl;
+			Log << "blocked - getaddrinfo " << nodename << std::endl;
 		}
 	}
+
 	return result;
 }
 
 bool is_blockrequest (LPCWSTR pwszObjectName) {
-
-	auto pdest = wcsstr (pwszObjectName, L"/ad-logic/");
-	if (nullptr != pdest)
+	std::wstring npwszObjectName (pwszObjectName);
+	if (std::wstring::npos != npwszObjectName.compare (L"/ad-logic/"))
 		return true;
-
-	pdest = wcsstr (pwszObjectName, L"/ads/");
-	if (nullptr != pdest)
+	if (std::wstring::npos != npwszObjectName.compare (L"/ads/"))
 		return true;
 
 	return false;
@@ -74,14 +72,12 @@ int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 								   DWORD dwFlags)
 {
 	//"spclient.wg.spotify.com"
-
-	if (g_Log) {
-		Log << "WinHttpOpenRequest " << pwszVerb << " " << pwszObjectName << std::endl;
-	}
-
-	if (is_blockrequest(pwszObjectName))
+	if (is_blockrequest (pwszObjectName)) {
+		if (g_Log) {
+			Log << "blocked - WinHttpOpenRequest " << pwszVerb << " " << pwszObjectName << std::endl;
+		}
 		return 0;
-
+	}
 	return fnwinhttpopenrequest (hConnect,
 								 pwszVerb,
 								 pwszObjectName,

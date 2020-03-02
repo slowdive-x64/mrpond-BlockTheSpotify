@@ -9,7 +9,7 @@
   </p>
   <h4 align="center">Important Notice(s)</h4>
   <p align="center">
-    This .dll is virus free, false checks may appear. This can be reassured via the source code. <br>
+    This .dll is virus free, false positive may appear. This can be reassured via the source code. <br>
     "chrome_elf.dll" gets replaced by Spotify Installer each time it updates, make sure to replace it again.
   </p>
 </center>
@@ -31,9 +31,10 @@
 1. Browse to Spotify installation folder `%APPDATA%/Spotify` 
 2. Simply delete chrome_elf.dll, config.ini from your Spotify installation
 3. Rename your backup dll to chrome_elf.dll
+* or reinstall spotify
 
 #### Note:
-* Starting from v0.47, AdGuardDNS removed.
+* Currently in process - already contact windows defender team about false positive.
 
 #### Known Issues and Caveats:
 * Ads banner maybe appear if you network use 'Web Proxy Auto-Discovery Protocol'

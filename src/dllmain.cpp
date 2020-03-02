@@ -28,6 +28,12 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 					   LPVOID lpReserved
 )
 {
+	TCHAR buffer[MAX_PATH];
+	GetModuleFileName (NULL, buffer, MAX_PATH);
+	std::string procname (buffer);
+	if (std::string::npos == procname.find ("Spotify.exe"))
+		return TRUE; // will not doing anything if not Spotify process
+
 	DisableThreadLibraryCalls(hModule);
 	if (strstr (GetCommandLine (), "--type=utility") ||
 		!strstr (GetCommandLine (), "--type=")) {

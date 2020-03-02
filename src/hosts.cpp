@@ -38,6 +38,70 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 	return result;
 }
 
+int WINAPI winhttpopenrequesthook (DWORD RetAddr,
+								   pfnwinhttpopenrequest fnwinhttpopenrequest,
+								   HINTERNET hConnect,
+								   LPCWSTR pwszVerb,
+								   LPCWSTR pwszObjectName,
+								   LPCWSTR pwszVersion,
+								   LPCWSTR pwszReferrer,
+								   LPCWSTR* ppwszAcceptTypes,
+								   DWORD dwFlags)
+{
+	//"spclient.wg.spotify.com"
+	//POST
+	//L"/ad-logic/state/config"
+	//L"/ad-logic/flashpoint"	/* this is ad between song/popup */
+	//L"/playlist-publish/v1/subscription/playlist/xxxxx" /* sent when change playlist */
+	//GET /* payload are base64 */
+	//L"/ads/v2/config?payload=xxxxx"
+	//L"/ads/v1/ads/hpto?payload=xxxxx"	
+	//L"/ads/v1/ads/leaderboard?payload=xxxxx
+	//L"/pagead/conversion/?ai=xxxxx"
+	//L"/monitoring?pload=xxxxx"
+	//L"/pcs/view?xai=xxxxx"
+	//HEADER /* add into every request */
+	//L"User-Agent: Spotify/111500448 Win32/0 (PC laptop)"
+	//L"Authorization: Bearer xxxxx"
+
+	if (g_Log) {
+		std::wstring wvb (pwszVerb);
+		std::wstring wobj (pwszObjectName);
+		std::string vb (wvb.begin(), wvb.end());
+		std::string obj (wobj.begin(), wobj.end());
+		Log_WinHttp << __FUNCTION__ << " " << vb << " " << obj << std::endl;
+	}
+
+	auto pdest = wcsstr (pwszObjectName, L"/ad-logic/");
+	if (nullptr != pdest)
+		return 0;
+
+	pdest = wcsstr (pwszObjectName, L"/ads/");
+	if (nullptr != pdest)
+		return 0;
+
+	return fnwinhttpopenrequest (hConnect,
+								 pwszVerb,
+								 pwszObjectName,
+								 pwszVersion,
+								 pwszReferrer,
+								 ppwszAcceptTypes,
+								 dwFlags);
+
+}
+
+bool check_pod (LPVOID lpBuffer)
+{
+	char* pdest = strstr ((LPSTR)lpBuffer, "{\"pod");
+	if (nullptr != pdest) {
+		//"pod" -> "xod"
+		pdest += 2;
+		*pdest = 'x';
+		return true;
+	}
+	return false;
+}
+
 // withthis you can replace other json response as well
 int WINAPI winhttpreaddatahook (DWORD RetAddr,
 								pfnwinhttpreaddata fnwinhttpreaddata,
@@ -53,23 +117,19 @@ int WINAPI winhttpreaddatahook (DWORD RetAddr,
 		return false;
 	}
 
-	char* pdest = strstr ((LPSTR)lpBuffer, "{\"login_url");
-	if (nullptr != pdest) {
-		return true;
-	}
-
-	pdest = strstr ((LPSTR)lpBuffer, "{\"credentials");
-	if (nullptr != pdest) {
-		return true;
-	}
+	//auto future_pod = std::async (std::launch::async, check_pod, lpBuffer);
 
 	if (g_Log) {
 		std::string data ((char*)lpBuffer, dwNumberOfBytesToRead);
-		Log_WinHttp << data << std::endl;
+		Log_WinHttp << __FUNCTION__ << " " << data << std::endl;
 	}
-	if (g_WinHttpReadDataFix) return false;
-	memset (lpBuffer, 0x0, dwNumberOfBytesToRead);
-	//SecureZeroMemory (lpBuffer, dwNumberOfBytesToRead);
+
+	//if (future_pod.get ()) {
+	if (check_pod (lpBuffer)) {
+		//memset (lpBuffer, 0x0, dwNumberOfBytesToRead);
+		return g_WinHttpReadDataFix ? false : true;
+	}
+
 	return true;
 }
 

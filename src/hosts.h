@@ -11,6 +11,24 @@ typedef int (__stdcall* pfnwinhttpreaddata) (HINTERNET hRequest,
 											 DWORD dwNumberOfBytesToRead,
 											 LPDWORD lpdwNumberOfBytesRead);
 
+typedef int (__stdcall* pfnwinhttpopenrequest)(HINTERNET hConnect,
+											   LPCWSTR pwszVerb,
+											   LPCWSTR pwszObjectName,
+											   LPCWSTR pwszVersion,
+											   LPCWSTR pwszReferrer,
+											   LPCWSTR* ppwszAcceptTypes,
+											   DWORD dwFlags);
+
+int WINAPI winhttpopenrequesthook (DWORD RetAddr,
+								   pfnwinhttpopenrequest fnwinhttpopenrequest,
+								   HINTERNET hConnect,
+								   LPCWSTR pwszVerb,
+								   LPCWSTR pwszObjectName,
+								   LPCWSTR pwszVersion,
+								   LPCWSTR pwszReferrer,
+								   LPCWSTR* ppwszAcceptTypes,
+								   DWORD dwFlags
+);
 
 int WINAPI getaddrinfohook (DWORD RetAddr,
 							pfngetaddrinfo fngetaddrinfo,

@@ -17,6 +17,8 @@
 #include <ws2tcpip.h>
 #include <windns.h>
 #include <winhttp.h>
+#include <shlwapi.h>
+
 #include <fstream>
 #include <vector>
 #include <algorithm>
@@ -25,6 +27,7 @@
 #include "hosts.h"
 #include "Adblock.h"
 
+#pragma comment (lib, "Shlwapi.lib")
 #pragma comment (lib, "Ws2_32.lib")
 #pragma comment (lib, "dnsapi.lib")
 

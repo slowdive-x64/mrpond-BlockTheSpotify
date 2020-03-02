@@ -54,7 +54,8 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 		{
 		case DLL_PROCESS_ATTACH:
 			init_config ();
-
+			// block ads request
+			InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
 			// block ads banner by hostname.
 			InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
 			// block ads by manipulate json response.

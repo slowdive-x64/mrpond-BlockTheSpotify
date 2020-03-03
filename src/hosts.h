@@ -21,8 +21,7 @@ int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 								   LPCWSTR pwszVersion,
 								   LPCWSTR pwszReferrer,
 								   LPCWSTR* ppwszAcceptTypes,
-								   DWORD dwFlags
-);
+								   DWORD dwFlags);
 
 int WINAPI getaddrinfohook (DWORD RetAddr,
 							pfngetaddrinfo fngetaddrinfo,

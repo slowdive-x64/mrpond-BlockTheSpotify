@@ -1,26 +1,17 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
 
-extern bool g_Log;
 extern bool g_Skip_wpad;
-
 extern std::wofstream Log;
 
-void init_log () {
-	Log.open ("log.txt",
-				  std::ios::out | std::ios::app);
-}
+static const char* configFile = "./config.ini";
 
-void init_config () {
-	const char* configFile = "./config.ini";
-
+void init_log (const char* logFile)
+{
 	if (1 == GetPrivateProfileInt ("Config", "Log", 0, configFile)) {
-		g_Log = true;
-		init_log ();
+		Log.open (logFile, std::ios::out | std::ios::app);
+		Log << __TIMESTAMP__ << '\n';
 	}
-	if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
-		g_Skip_wpad = true;
-
 }
 
 BOOL APIENTRY DllMain (HMODULE hModule,
@@ -28,27 +19,34 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 					   LPVOID lpReserved
 )
 {
+	DisableThreadLibraryCalls (hModule);
 	TCHAR buffer[MAX_PATH];
 	GetModuleFileName (NULL, buffer, MAX_PATH);
 	std::string procname (buffer);
-	if (std::string::npos == procname.find ("Spotify.exe"))
-		return TRUE; // will not doing anything if not Spotify process
 
-	DisableThreadLibraryCalls(hModule);
-	if (strstr (GetCommandLine (), "--type=utility") ||
-		!strstr (GetCommandLine (), "--type=")) {
-
+	if (std::string::npos != procname.find ("Spotify.exe")) {// only Spotify process
+		procname = GetCommandLine ();
 		switch (ul_reason_for_call)
 		{
 		case DLL_PROCESS_ATTACH:
-			init_config ();
-			// block ads request
-			InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
-			// block ads banner by hostname.
-			InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
+
+			// block ads request - main process
+			if (std::string::npos == procname.find ("--type=")) {
+				InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
+				init_log ("main_log.txt");
+			}
+
+			// block ads banner by hostname - utility process
+			if (std::string::npos != procname.find ("--type=utility")) {
+				InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
+				init_log ("utility_log.txt");
+				if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
+					g_Skip_wpad = true;
+			}
 			break;
 		case DLL_PROCESS_DETACH:
-			if (g_Log) {
+			if (Log.is_open ()) {
+				Log.flush ();
 				Log.close ();
 			}
 			break;

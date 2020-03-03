@@ -7,14 +7,20 @@ assignees: ''
 
 ---
 
+**Important**
+ - Make sure you use [latest spotify](https://www.spotify.com) before report a bug.
+ - Make sure you use [latest blockthespot](https://www.github.com/mrpond/BlockTheSpot/releases) before report a bug.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. Windows 10]
- - Spotify Version: [e.g. 1.1.2.285.ga97985ef]
+ - Spotify Version: [e.g. 1.1.27.472.gf6574b97]
 
 **Additional context**
-Make sure you use [latest blockthespot](https://github.com/mrpond/BlockTheSpot/releases) before report a bug.
-Add any other context about the problem here. If ad blocking is not working, please include a debug Log
-by edit config.ini and set Log = 1 after ads play close spotify and zip the log_*.txt.
+Add any other context about the problem here. 
+If ad blocking is not working, please include a debug Log by
+ 1. edit config.ini and set Log = 1 
+ 2. after ads song play close spotify
+ 3. zip the main_log.txt, utility_log.txt

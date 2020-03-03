@@ -34,9 +34,17 @@
 * or reinstall spotify
 
 #### Note:
-* Currently in process - already contact windows defender team about false positive.
-
-#### Known Issues and Caveats:
 * Ads banner maybe appear if you network use 'Web Proxy Auto-Discovery Protocol'
 https://en.wikipedia.org/wiki/Web_Proxy_Auto-Discovery_Protocol
 set Skip_wpad in config.ini to 1 may help.
+
+#### Known Issues and Caveats:
+* Windows Defender - false positive.
+Please follow below instruction - this is official from windows defender team.
+Analyst comments:
+We have removed the detection. Please follow the steps below to clear cached detection and obtain the latest malware definitions.
+1. Open command prompt as administrator and change directory to c:\Program Files\Windows Defender
+2. Run ¡°MpCmdRun.exe -removedefinitions -dynamicsignatures¡±
+3. Run "MpCmdRun.exe -SignatureUpdate"
+Alternatively, the latest definition is available for download here: https://www.microsoft.com/en-us/wdsi/definitions
+Thank you for contacting Microsoft.

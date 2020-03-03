@@ -20,36 +20,32 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 )
 {
 	DisableThreadLibraryCalls (hModule);
-	TCHAR buffer[MAX_PATH];
-	GetModuleFileName (NULL, buffer, MAX_PATH);
-	std::string procname (buffer);
+	std::string procname (GetCommandLine ());
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
 
-	if (std::string::npos != procname.find ("Spotify.exe")) {// only Spotify process
-		procname = GetCommandLine ();
-		switch (ul_reason_for_call)
-		{
-		case DLL_PROCESS_ATTACH:
-
-			// block ads request - main process
-			if (std::string::npos == procname.find ("--type=")) {
-				InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
-				init_log ("main_log.txt");
-			}
-			else if (std::string::npos != procname.find ("--type=utility")) {
-				// block ads banner by hostname - utility process
-				InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
-				init_log ("utility_log.txt");
-				if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
-					g_Skip_wpad = true;
-			}
-			break;
-		case DLL_PROCESS_DETACH:
-			if (Log.is_open ()) {
-				Log.flush ();
-				Log.close ();
-			}
-			break;
+		// block ads request - main process
+		if (std::string::npos == procname.find ("--type=")) {
+			InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
+			init_log ("main_log.txt");
+			//MessageBox (NULL, procname.c_str(), "Command line", 0);
 		}
+		else if (std::string::npos != procname.find ("--type=utility")) {
+			// block ads banner by hostname - utility process
+			InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
+			init_log ("utility_log.txt");
+			//MessageBox (NULL, procname.c_str (), "Command line", 0);
+			if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
+				g_Skip_wpad = true;
+		}
+		break;
+	case DLL_PROCESS_DETACH:
+		if (Log.is_open ()) {
+			Log.flush ();
+			Log.close ();
+		}
+		break;
 	}
 	return TRUE;
 }

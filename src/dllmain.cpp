@@ -35,9 +35,8 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 				InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
 				init_log ("main_log.txt");
 			}
-
-			// block ads banner by hostname - utility process
-			if (std::string::npos != procname.find ("--type=utility")) {
+			else if (std::string::npos != procname.find ("--type=utility")) {
+				// block ads banner by hostname - utility process
 				InstallHookApi ("ws2_32.dll", "getaddrinfo", getaddrinfohook);
 				init_log ("utility_log.txt");
 				if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))

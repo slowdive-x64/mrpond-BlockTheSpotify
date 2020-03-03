@@ -1,13 +1,15 @@
 #include "stdafx.h"
 
+// Web Proxy Auto-Discovery (WPAD)
 bool g_Skip_wpad = false;
-
+// Logging system
 std::wofstream Log;
 
+// check if ads hostname
 bool is_blockhost (const char* nodename) {
 
 	std::string nnodename (nodename);
-	// Web Proxy Auto-Discovery (WPAD)
+	
 	if (0 == nnodename.compare("wpad"))
 		return g_Skip_wpad ? true : false;
 	
@@ -26,15 +28,15 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 							const struct addrinfo* hints,
 							struct addrinfo** res)
 {
-	auto isblock = std::async (std::launch::async, is_blockhost, nodename);
 	// future/async
+	auto isblock = std::async (std::launch::async, is_blockhost, nodename);
+	// GetAddrInfo return 0 on success
 	auto result = fngetaddrinfo (nodename,
 								 servname,
 								 hints,
 								 res);
 
-	if (0 == result && isblock.get ()) { // GetAddrInfo return 0 on success
-
+	if (0 == result && isblock.get ()) { 
 		for (auto ptr = *res; nullptr != ptr; ptr = ptr->ai_next) {
 			auto ipv4 = (struct sockaddr_in*)ptr->ai_addr;
 			//memset (&ipv4->sin_addr.S_un.S_addr, 0x0, sizeof ULONG);
@@ -47,6 +49,7 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 	return result;
 }
 
+// block http request base on URI
 bool is_blockrequest (LPCWSTR pwszObjectName) {
 	std::wstring npwszObjectName (pwszObjectName);
 	if (std::wstring::npos != npwszObjectName.compare (L"/ad-logic/"))
@@ -57,17 +60,17 @@ bool is_blockrequest (LPCWSTR pwszObjectName) {
 	return false;
 }
 
+// spclient.wg.spotify.com
 int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 								   pfnwinhttpopenrequest fnwinhttpopenrequest,
 								   HINTERNET hConnect,
-								   LPCWSTR pwszVerb,
-								   LPCWSTR pwszObjectName,
+								   LPCWSTR pwszVerb, // HTTP Method
+								   LPCWSTR pwszObjectName, // URI
 								   LPCWSTR pwszVersion,
 								   LPCWSTR pwszReferrer,
 								   LPCWSTR* ppwszAcceptTypes,
 								   DWORD dwFlags)
 {
-	//"spclient.wg.spotify.com"
 	if (is_blockrequest (pwszObjectName)) {
 		if (Log.is_open ())
 			Log << "blocked - WinHttpOpenRequest " << pwszVerb << " " << pwszObjectName << '\n';

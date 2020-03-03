@@ -40,8 +40,11 @@ set Skip_wpad in config.ini to 1 may help.
 
 #### Known Issues and Caveats:
 * Windows Defender - false positive.
+
 Please follow below instruction - this is official from windows defender team.
+
 Analyst comments:
+
 We have removed the detection. Please follow the steps below to clear cached detection and obtain the latest malware definitions.
 1. Open command prompt as administrator and change directory to c:\Program Files\Windows Defender
 2. Run ¡°MpCmdRun.exe -removedefinitions -dynamicsignatures¡±

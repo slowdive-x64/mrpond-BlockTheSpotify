@@ -47,7 +47,9 @@ Analyst comments:
 
 We have removed the detection. Please follow the steps below to clear cached detection and obtain the latest malware definitions.
 1. Open command prompt as administrator and change directory to c:\Program Files\Windows Defender
-2. Run ¡°MpCmdRun.exe -removedefinitions -dynamicsignatures¡±
+2. Run "MpCmdRun.exe -removedefinitions -dynamicsignatures"
 3. Run "MpCmdRun.exe -SignatureUpdate"
+
 Alternatively, the latest definition is available for download here: https://www.microsoft.com/en-us/wdsi/definitions
+
 Thank you for contacting Microsoft.

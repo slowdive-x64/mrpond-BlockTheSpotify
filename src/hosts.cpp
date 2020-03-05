@@ -9,10 +9,10 @@ std::wofstream Log;
 bool is_blockhost (const char* nodename) {
 
 	std::string nnodename (nodename);
-	
-	if (0 == nnodename.compare("wpad"))
+
+	if (0 == nnodename.compare ("wpad"))
 		return g_Skip_wpad ? true : false;
-	
+
 	if (std::string::npos != nnodename.find ("google"))
 		return true;
 	if (std::string::npos != nnodename.find ("doubleclick"))
@@ -36,27 +36,31 @@ int WINAPI getaddrinfohook (DWORD RetAddr,
 								 hints,
 								 res);
 
-	if (0 == result && isblock.get ()) { 
+	if (0 == result && isblock.get ()) {
 		for (auto ptr = *res; nullptr != ptr; ptr = ptr->ai_next) {
 			auto ipv4 = (struct sockaddr_in*)ptr->ai_addr;
 			//memset (&ipv4->sin_addr.S_un.S_addr, 0x0, sizeof ULONG);
 			ipv4->sin_addr.S_un.S_addr = INADDR_ANY;
 		}
 		if (Log.is_open ())
-			Log << "blocked - getaddrinfo " << nodename << '\n';
+			Log << "blocked - " << nodename << std::endl;
 	}
 
 	return result;
 }
 
 // block http request base on URI
-bool is_blockrequest (LPCWSTR pwszObjectName) {
-	std::wstring npwszObjectName (pwszObjectName);
-	if (std::wstring::npos != npwszObjectName.compare (L"/ad-logic/"))
-		return true;
-	if (std::wstring::npos != npwszObjectName.compare (L"/ads/"))
-		return true;
-
+bool is_blockrequest (const std::wstring& npwszVerb,const std::wstring& npwszObjectName) {
+	if (0 == npwszVerb.compare (L"POST")) {
+		if (0 == npwszObjectName.compare (L"/ad-logic/state/config")) {
+			return true;
+		}
+	}
+	if (0 == npwszVerb.compare (L"GET")) {
+		if (0 == npwszObjectName.compare (0, 5, L"/ads/", 5)) {
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -71,11 +75,21 @@ int WINAPI winhttpopenrequesthook (DWORD RetAddr,
 								   LPCWSTR* ppwszAcceptTypes,
 								   DWORD dwFlags)
 {
-	if (is_blockrequest (pwszObjectName)) {
-		if (Log.is_open ())
-			Log << "blocked - WinHttpOpenRequest " << pwszVerb << " " << pwszObjectName << '\n';
+	std::wstring npwszVerb (pwszVerb);
+	std::wstring npwszObjectName (pwszObjectName);
+
+	if (is_blockrequest (npwszVerb, npwszObjectName)) {
+		if (Log.is_open ()) {
+			auto pos = npwszObjectName.find_first_of (L"="); // check if had ?payload=
+			if (pos != std::string::npos) {
+				npwszObjectName.erase (pos + 1); // trim original base64 payload out
+				npwszObjectName.append (L"c2VjcmV0"); // append "secret"
+			}
+			Log << "blocked - " << npwszVerb << " " << npwszObjectName << std::endl;
+		}
 		return 0;
 	}
+
 	return fnwinhttpopenrequest (hConnect,
 								 pwszVerb,
 								 pwszObjectName,

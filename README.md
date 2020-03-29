@@ -22,21 +22,25 @@
 :warning: This mod is for the [**Desktop Application**](https://www.spotify.com/download/windows/) of Spotify on Windows, **not the Microsoft Store version**.
 
 #### Installation/Update:
+* Just run BlockTheSpot.bat (https://github.com/rednek46)
+or
 1. Browse to Spotify installation folder `%APPDATA%/Spotify`
 2. Backup existing `chrome_elf.dll` by renaming it (e.g. chrome_elf.bak)
 3. Download [chrome_elf.zip](chrome_elf.zip)
 4. Extract chrome_elf.dll, config.ini from chrome_elf.zip to that folder. 
 
 #### Uninstall:
+* Just run uninstall.bat or reinstall spotify (https://github.com/rednek46)
+or
 1. Browse to Spotify installation folder `%APPDATA%/Spotify` 
 2. Simply delete chrome_elf.dll, config.ini from your Spotify installation
 3. Rename your backup dll to chrome_elf.dll
-* or reinstall spotify
 
 #### Note:
 * Ads banner maybe appear if you network use 'Web Proxy Auto-Discovery Protocol'
 https://en.wikipedia.org/wiki/Web_Proxy_Auto-Discovery_Protocol
 set Skip_wpad in config.ini to 1 may help.
+* if automatic install/uninstall bat not working please contact (https://github.com/rednek46)
 
 #### Known Issues and Caveats:
 * Windows Defender - false positive.

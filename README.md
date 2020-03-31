@@ -25,7 +25,7 @@
 or
 1. Browse to Spotify installation folder `%APPDATA%/Spotify`
 2. Backup existing `chrome_elf.dll` by renaming it (e.g. chrome_elf.bak)
-3. Download chrome_elf.zip from releases
+3. Download chrome_elf.zip from [releases](https://github.com/mrpond/BlockTheSpot/releases)
 4. Extract chrome_elf.dll, config.ini from chrome_elf.zip to that folder. 
 
 #### Uninstall:

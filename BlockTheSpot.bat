@@ -18,10 +18,17 @@ if %errorlevel% EQU 0 (
 for /f delims^=^"^ tokens^=2 %%A in ('reg query HKCR\spotify\shell\open\command') do (
 	if exist "%%~dpA\Spotify.exe" set p=%%~dpA
 )
+
+echo Downloading latest patch (chrome_elf.zip)
+echo.
+powershell.exe -ExecutionPolicy Bypass -Command (new-object System.Net.WebClient).DownloadFile('https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip','%~p0chrome_elf.zip')
+echo Patching Spotify..
+
 if defined p (
-	echo Patching Spotify
 	powershell -command "Expand-Archive -Force '%~dp0chrome_elf.zip' '%~dp0'"
-	move "%APPDATA%\Spotify\chrome_elf.dll" "%APPDATA%\Spotify\chrome_elf.dll.bak" > NUL 2>&1
+	if not exist "%APPDATA%\Spotify\chrome_elf.dll.bak" (
+		move "%APPDATA%\Spotify\chrome_elf.dll" "%APPDATA%\Spotify\chrome_elf.dll.bak" > NUL 2>&1
+	)
 	copy chrome_elf.dll "%APPDATA%\Spotify\" > NUL 2>&1
 	copy config.ini "%APPDATA%\Spotify\" > NUL 2>&1
 	del /s /q "chrome_elf.dll" > NUL 2>&1
@@ -43,6 +50,5 @@ if defined p (
 	del /s /q "chrome_elf.dll" > NUL 2>&1
 	del /s /q "config.ini" > NUL 2>&1
 	echo Patching Completed
-	start "" "%appdata%\Spotify\Spotify.exe"
 )
 pause

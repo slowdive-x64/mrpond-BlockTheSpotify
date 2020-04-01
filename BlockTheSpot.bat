@@ -1,54 +1,89 @@
-@echo off
-echo *****************
-echo Author: @rednek46
-echo *****************
-setlocal enableextensions
-taskkill /f /im Spotify.exe 2> NUL
-taskkill /f /im spotifywebhelper.exe 2> NUL
-powershell Get-AppxPackage -Name "SpotifyAB.SpotifyMusic" | findstr "PackageFullName" > NUL
-if %errorlevel% EQU 0 (
-	echo.
-	echo The Microsoft Store version of Spotify has been detected which is not supported.
-	echo Please uninstall it first, and Run this file again.
-	echo.
-	echo To uninstall, search for Spotify in the start menu and right-click on the result and click Uninstall.
-	echo.
-	exit /b
-)
-for /f delims^=^"^ tokens^=2 %%A in ('reg query HKCR\spotify\shell\open\command') do (
-	if exist "%%~dpA\Spotify.exe" set p=%%~dpA
-)
+;;;===,,,@echo off
+;;;===,,,findstr /v "^;;;===,,," "%~f0" > "%~dp0ps.ps1"
+;;;===,,,PowerShell.exe -ExecutionPolicy Bypass -Command "& '%~dp0ps.ps1'"
+;;;===,,,del /s /q "%~dp0ps.ps1" >NUL 2>&1
+;;;===,,,pause
 
-echo Downloading latest patch (chrome_elf.zip)
-echo.
-powershell.exe -ExecutionPolicy Bypass -Command (new-object System.Net.WebClient).DownloadFile('https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip','%~p0chrome_elf.zip')
-echo Patching Spotify..
+# Ignore errors from `Stop-Process`
+$PSDefaultParameterValues['Stop-Process:ErrorAction'] = 'SilentlyContinue'
 
-if defined p (
-	powershell -command "Expand-Archive -Force '%~dp0chrome_elf.zip' '%~dp0'"
-	if not exist "%APPDATA%\Spotify\chrome_elf.dll.bak" (
-		move "%APPDATA%\Spotify\chrome_elf.dll" "%APPDATA%\Spotify\chrome_elf.dll.bak" > NUL 2>&1
-	)
-	copy chrome_elf.dll "%APPDATA%\Spotify\" > NUL 2>&1
-	copy config.ini "%APPDATA%\Spotify\" > NUL 2>&1
-	del /s /q "chrome_elf.dll" > NUL 2>&1
-	del /s /q "config.ini" > NUL 2>&1
-	echo Patching Completed
-) else (
-	echo Spotify installation was not detected. Downloading Latest Spotify full setup. 
-	echo Please wait..
-	curl https://download.scdn.co/SpotifyFullSetup.exe -O SpotifyFullSetup.exe
-	if not exist "%appdata%\Spotify\" mkdir "%appdata%\Spotify" > NUL 2>&1
-	echo Running installation...
-	SpotifyFullSetup.exe
-	del /s /q "SpotifyFullSetup.exe" > NUL 2>&1
-	echo Patching Spotify
-	powershell -command "Expand-Archive -Force '%~dp0chrome_elf.zip' '%~dp0'"
-	move "%APPDATA%\Spotify\chrome_elf.dll" "%APPDATA%\Spotify\chrome_elf.dll.bak" > NUL 2>&1
-	copy chrome_elf.dll "%APPDATA%\Spotify\" > NUL 2>&1
-	copy config.ini "%APPDATA%\Spotify\" > NUL 2>&1
-	del /s /q "chrome_elf.dll" > NUL 2>&1
-	del /s /q "config.ini" > NUL 2>&1
-	echo Patching Completed
-)
-pause
+write-host @'
+***************** 
+Author: @rednek46
+***************** 
+'@
+
+$SpotifyDirectory = "$env:APPDATA\Spotify"
+$SpotifyExecutable = "$SpotifyDirectory\Spotify.exe"
+
+Write-Host 'Terminating Spotify...'
+Write-Host("")
+Stop-Process -Name Spotify
+Stop-Process -Name SpotifyWebHelper
+
+if (Get-AppxPackage -Name SpotifyAB.SpotifyMusic) {
+  Write-Host @'
+The Microsoft Store version of Spotify has been detected which is not supported.
+Please uninstall it first, and Run this file again.
+
+To uninstall, search for Spotify in the start menu and right-click on the result and click Uninstall.
+'@
+  Pause
+  exit
+}
+
+mkdir $env:TEMP/BlockTheSpotTEMP `
+  | Convert-Path `
+  | Set-Location
+
+Write-Host("Downloading latest patch (chrome_elf.zip)")
+Write-Host("")
+
+$webClient = New-Object -TypeName System.Net.WebClient
+try {
+  $webClient.DownloadFile(
+    'https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip',
+    "$PWD\chrome_elf.zip"
+  )
+} catch {
+  Write-Output $_
+  Sleep
+}
+
+if (test-path $SpotifyDirectory/Spotify.exe){
+
+    if (!(test-path $SpotifyDirectory/chrome_elf.dll.bak)){
+
+		move $SpotifyDirectory\chrome_elf.dll $SpotifyDirectory\chrome_elf.dll.bak >$null 2>&1
+	}
+
+} else {
+	write-host @'
+Spotify installation was not detected. Downloading Latest Spotify full setup.
+Please wait..
+'@
+    try {
+    $webClient.DownloadFile(
+      'https://download.scdn.co/SpotifyFullSetup.exe',
+      "$PWD\SpotifyFullSetup.exe"
+    )
+    } catch {
+        Write-Output $_
+        Sleep
+    }
+	
+    write-host("Running installation...")
+
+	.\SpotifyFullSetup.exe | Out-Null
+
+	rm $pwd/SpotifyFullSetup.exe >$null 2>&1
+    move $SpotifyDirectory\chrome_elf.dll $SpotifyDirectory\chrome_elf.dll.bak >$null 2>&1
+}
+Write-Host("Patching Spotify..")
+Expand-Archive -Force 'chrome_elf.zip' $pwd
+$patchFiles = "$PWD\chrome_elf.dll", "$PWD\config.ini"
+Copy-Item -LiteralPath $patchFiles -Destination "$SpotifyDirectory"
+cd $env:HOMEPATH
+rm -Recurse $env:TEMP\BlockTheSpotTEMP
+Write-Host("Patching Completed.")
+exit 

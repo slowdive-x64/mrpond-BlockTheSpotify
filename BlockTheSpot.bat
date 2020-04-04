@@ -3,7 +3,6 @@
 ;;;===,,,PowerShell.exe -ExecutionPolicy Bypass -Command "& '%~dp0ps.ps1'"
 ;;;===,,,del /s /q "%~dp0ps.ps1" >NUL 2>&1
 ;;;===,,,pause
-
 # Ignore errors from `Stop-Process`
 $PSDefaultParameterValues['Stop-Process:ErrorAction'] = 'SilentlyContinue'
 
@@ -16,8 +15,7 @@ Author: @rednek46
 $SpotifyDirectory = "$env:APPDATA\Spotify"
 $SpotifyExecutable = "$SpotifyDirectory\Spotify.exe"
 
-Write-Host 'Terminating Spotify...'
-Write-Host("")
+Write-Host 'Stopping Spotify...'
 Stop-Process -Name Spotify
 Stop-Process -Name SpotifyWebHelper
 
@@ -32,58 +30,80 @@ To uninstall, search for Spotify in the start menu and right-click on the result
   exit
 }
 
-mkdir $env:TEMP/BlockTheSpotTEMP `
+
+Push-Location -LiteralPath $env:TEMP
+try {
+  # Unique directory name based on time
+  New-Item -Type Directory -Name "BlockTheSpot-$(Get-Date -UFormat '%Y-%m-%d_%H-%M-%S')" `
   | Convert-Path `
   | Set-Location
+} catch {
+  Write-Output $_
+  Pause
+  exit
+}
 
-Write-Host("Downloading latest patch (chrome_elf.zip)")
-Write-Host("")
-
+Write-Host 'Downloading latest patch (chrome_elf.zip)...'`n
 $webClient = New-Object -TypeName System.Net.WebClient
 try {
   $webClient.DownloadFile(
+    # Remote file URL
     'https://github.com/mrpond/BlockTheSpot/releases/latest/download/chrome_elf.zip',
+    # Local file path
     "$PWD\chrome_elf.zip"
   )
 } catch {
   Write-Output $_
   Sleep
 }
+Expand-Archive -Force -LiteralPath "$PWD\chrome_elf.zip" -DestinationPath $PWD
+Remove-Item -LiteralPath "$PWD\chrome_elf.zip"
 
-if (test-path $SpotifyDirectory/Spotify.exe){
-
-    if (!(test-path $SpotifyDirectory/chrome_elf.dll.bak)){
-
-		move $SpotifyDirectory\chrome_elf.dll $SpotifyDirectory\chrome_elf.dll.bak >$null 2>&1
-	}
-
-} else {
-	write-host @'
-Spotify installation was not detected. Downloading Latest Spotify full setup.
-Please wait..
+$spotifyInstalled = (Test-Path -LiteralPath $SpotifyExecutable)
+if (-not $spotifyInstalled) {
+  Write-Host @'
+Spotify installation was not detected.
+Downloading Latest Spotify full setup, please wait...
 '@
-    try {
+  try {
     $webClient.DownloadFile(
+      # Remote file URL
       'https://download.scdn.co/SpotifyFullSetup.exe',
+      # Local file path
       "$PWD\SpotifyFullSetup.exe"
     )
-    } catch {
-        Write-Output $_
-        Sleep
-    }
-	
-    write-host("Running installation...")
-
-	.\SpotifyFullSetup.exe | Out-Null
-
-	rm $pwd/SpotifyFullSetup.exe >$null 2>&1
-    move $SpotifyDirectory\chrome_elf.dll $SpotifyDirectory\chrome_elf.dll.bak >$null 2>&1
+  } catch {
+    Write-Output $_
+    Pause
+    exit
+  }
+  mkdir $SpotifyDirectory >$null 2>&1
+  Write-Host 'Running installation...'
+  Start-Process -FilePath "$PWD\SpotifyFullSetup.exe"
+  Write-Host 'Stopping Spotify...Again'
+  while ((Get-Process -name Spotify -ErrorAction SilentlyContinue) -eq $null){
+     #waiting until installation complete
+     }
+  Stop-Process -Name Spotify >$null 2>&1
+  Stop-Process -Name SpotifyWebHelper >$null 2>&1
+  Stop-Process -Name SpotifyFullSetup >$null 2>&1
 }
-Write-Host("Patching Spotify..")
-Expand-Archive -Force 'chrome_elf.zip' $pwd
+
+if (!(test-path $SpotifyDirectory/chrome_elf.dll.bak)){
+	move $SpotifyDirectory\chrome_elf.dll $SpotifyDirectory\chrome_elf.dll.bak >$null 2>&1
+}
+
+Write-Host 'Patching Spotify...'
 $patchFiles = "$PWD\chrome_elf.dll", "$PWD\config.ini"
 Copy-Item -LiteralPath $patchFiles -Destination "$SpotifyDirectory"
-cd $env:HOMEPATH
-rm -Recurse $env:TEMP\BlockTheSpotTEMP
-Write-Host("Patching Completed.")
-exit 
+
+$tempDirectory = $PWD
+Pop-Location
+
+Remove-Item -Recurse -LiteralPath $tempDirectory  
+
+Write-Host 'Patching Complete, starting Spotify...'
+Start-Process -WorkingDirectory $SpotifyDirectory -FilePath $SpotifyExecutable
+Write-Host 'Done.'
+pause
+exit

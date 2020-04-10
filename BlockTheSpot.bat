@@ -15,21 +15,28 @@ Author: @rednek46
 $SpotifyDirectory = "$env:APPDATA\Spotify"
 $SpotifyExecutable = "$SpotifyDirectory\Spotify.exe"
 
-Write-Host 'Stopping Spotify...'
+Write-Host 'Stopping Spotify...'`n
 Stop-Process -Name Spotify
 Stop-Process -Name SpotifyWebHelper
 
 if (Get-AppxPackage -Name SpotifyAB.SpotifyMusic) {
   Write-Host @'
 The Microsoft Store version of Spotify has been detected which is not supported.
-Please uninstall it first, and Run this file again.
-
-To uninstall, search for Spotify in the start menu and right-click on the result and click Uninstall.
-'@
-  Pause
-  exit
+'@`n
+  $ch = Read-Host -Prompt "Uninstall Spotify Windows Store edition (Y/N) "
+  if ($ch -eq 'y'){
+     Write-Host @'
+Uninstalling Spotify.
+'@`n
+     Get-AppxPackage -Name SpotifyAB.SpotifyMusic | Remove-AppxPackage
+  } else{
+     Write-Host @'
+Exiting...
+'@`n
+     Pause 
+     exit
+    }
 }
-
 
 Push-Location -LiteralPath $env:TEMP
 try {

@@ -2,9 +2,6 @@
 
 // Web Proxy Auto-Discovery (WPAD)
 bool g_skip_wpad = false;
-// Black banner fix
-bool g_fix_blackbanner = false;
-
 // Logging system
 std::wofstream logging;
 
@@ -21,9 +18,7 @@ bool is_blockhost (const char* nodename) {
 		return true;
 	if (std::string::npos != nnodename.find ("qualaroo.com"))
 		return true;
-	if (std::string::npos != nnodename.find ("login")) {
-		return g_fix_blackbanner ? true : false;
-	}
+
 	return false;
 }
 

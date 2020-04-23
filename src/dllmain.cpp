@@ -27,11 +27,11 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 		switch (ul_reason_for_call)
 		{
 		case DLL_PROCESS_ATTACH:
-			// block ads request - main process
 			if (std::string::npos == procname.find ("--type=")) {
+				// block ads request - main process
 				InstallHookApi ("Winhttp.dll", "WinHttpOpenRequest", winhttpopenrequesthook);
+				CreateThread (NULL, NULL, KillBanner, NULL, 0, NULL);
 				init_log ("main_log.txt");
-				
 			}
 			else if (std::string::npos != procname.find ("--type=utility")) {
 				// block ads banner by hostname - utility process
@@ -39,8 +39,6 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 				init_log ("utility_log.txt");
 				if (1 == GetPrivateProfileInt ("Config", "Skip_wpad", 0, configFile))
 					g_skip_wpad = true;
-				if (1 == GetPrivateProfileInt ("Config", "Fix_Black_Banner", 0, configFile))
-					g_fix_blackbanner = true;
 			}
 			break;
 		case DLL_PROCESS_DETACH:

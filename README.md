@@ -41,7 +41,6 @@ set Skip_wpad in config.ini to 1 may help.
 * if automatic install/uninstall .bat not working please contact (https://github.com/rednek46)
 
 #### Known Issues and Caveats:
-* If you can't login set Fix_Black_Banner to 0 in config.ini and turn it back on later.
 * False positive - Windows Defender and other product.
 0. Not recommended to do whitelist in antivirus software.
 1. Do Windows Update/Patch.

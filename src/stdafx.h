@@ -20,7 +20,7 @@
 #include <fstream>
 #include <future>
 
-#include "HookApi.h"
+#include "mhook-lib/mhook.h"
 #include "hosts.h"
 #include "Modify.h"
 

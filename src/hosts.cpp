@@ -20,7 +20,6 @@ bool is_blockhost (const char* nodename) {
 		return true;
 	if (std::string::npos != nnodename.find ("qualaroo.com"))
 		return true;
-
 	return false;
 }
 
@@ -39,11 +38,11 @@ int WSAAPI getaddrinfo_hook (
 				ipv4->sin_addr.S_un.S_addr = INADDR_ANY;
 			}
 			if (logging.is_open ())
-				logging << "blocked - " << nodename << '\n';
+				logging << "blocked - " << nodename << std::endl;
 		}
 		else {
 			if (logging.is_open ())
-				logging << "allowed - " << nodename << '\n';
+				logging << "allowed - " << nodename << std::endl;
 		}
 	}
 	return result;

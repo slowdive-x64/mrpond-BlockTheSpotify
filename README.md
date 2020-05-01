@@ -8,21 +8,15 @@
     <strong>Last updated:</strong> 1 March 2020<br>
     <strong>Last tested version:</strong> 1.1.31.703.g256add22
   </p>
-  <h4 align="center">Important Notice(s)</h4>
-  <p align="center">
-    This .dll is virus free, false positive may appear. This can be reassured via the source code. <br>
-    "chrome_elf.dll" gets replaced by Spotify Installer each time it updates, make sure to replace it again.
-  </p>
+  <h4 align="center">Important!!</h4>
+ * Do Windows Update/Patch<br>
+ * Make sure you antivirus working and had latest virus signature<br>
+ * "chrome_elf.dll" gets replaced by Spotify Installer each time it updates, make sure to replace it again.<br>
 </center>
 
-#### IMPORTANT ####
-* Known Issues and Caveats:
-* False positive - Windows Defender and other product.
-0. Not recommended to do whitelist in antivirus software.
-1. Do Windows Update/Patch.
-2. Make sure you antivirus working and had latest virus signature.
-3. Goto "windows security" -> "Virus & Threat protection"
-4. Click "Allowed threats" -> Remove all allowed threats
+#### IMPORTANT FOR OLD USER:
+1. Goto "windows security" -> "Virus & Threat protection"
+2. Click "Allowed threats" -> Remove all allowed threats
 
 ### Features:
 * Blocks all banner/video/audio ads within the app

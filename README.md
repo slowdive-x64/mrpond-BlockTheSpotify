@@ -5,8 +5,8 @@
   <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application.</h4>
   <h5 align="center">Please support Spotify by purchasing premium</h5>
   <p align="center">
-    <strong>Last updated:</strong> 10 May 2020<br>
-    <strong>Last tested version:</strong> 1.1.32.618.gda5638a6
+    <strong>Last updated:</strong> 3 June 2020<br>
+    <strong>Last tested version:</strong> 1.1.34.694.gac68a2b3
   </p>
   <h4 align="center">Important!!</h4>
  * Do Windows Update/Patch<br>
@@ -14,7 +14,8 @@
  * "chrome_elf.dll" gets replaced by Spotify Installer each time it updates, make sure to replace it again.<br>
 </center>
 
-#### IMPORTANT FOR OLD USER:
+#### IMPORTANT FOR LIVING IN 2020 AND SO ON:
+0. Windows update, Spotify/Other Software update, BlockTheSpot update
 1. Goto "windows security" -> "Virus & Threat protection"
 2. Click "Allowed threats" -> Remove all allowed threats
 

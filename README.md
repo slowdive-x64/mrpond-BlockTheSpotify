@@ -2,7 +2,7 @@
 
 <center>
     <h1 align="center">#เยาวชนปลดแอก #Thailand #ThaiProtest #ThailandProtest #freeYOUTH</h1>
-    <h1 align="center">Please retweet this, help me stop this dictator government!</h1>
+    <h1 align="center">Please retweet these hashtag, help me stop dictator government!</h1>
 </center>
 
 <center>

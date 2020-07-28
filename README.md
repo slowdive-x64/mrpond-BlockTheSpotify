@@ -1,8 +1,8 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/31l6ynm0a1fhr2vs/branch/master?svg=true)](https://ci.appveyor.com/project/mrpond/blockthespot/branch/master)
 
 <center>
-    <h1 align="center">#àÂÒÇª¹»Å´áÍ¡ #Thailand #ThaiProtest #ThailandProtest #freeYOUTH</h1>
-    <h1 align="center">Please retweet these hashtag, help me stop dictator government!</h1>
+    <h3 align="center"><a href=https://en.wikipedia.org/wiki/2020_Thai_protests>Support 2020 Thai protest</a></h3>
+    <h3 align="center">help me stop dictator government!</h3>
 </center>
 
 <center>

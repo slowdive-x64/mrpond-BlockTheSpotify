@@ -7,19 +7,19 @@ std::wofstream logging;
 
 _getaddrinfo getaddrinfo_orig;
 
+const std::array<std::string, 4> blockList = { "google", "doubleclick", "qualaroo.com" , "fbsbx.com" };
+
 // check if ads hostname
 bool is_blockhost (const char* nodename) {
+
 	std::string nnodename (nodename);
 
 	if (0 == nnodename.compare ("wpad"))
 		return g_skip_wpad ? true : false;
-
-	if (std::string::npos != nnodename.find ("google"))
-		return true;
-	if (std::string::npos != nnodename.find ("doubleclick"))
-		return true;
-	if (std::string::npos != nnodename.find ("qualaroo.com"))
-		return true;
+	for (auto i : blockList) {
+		if (std::string::npos != nnodename.find (i))
+			return true;
+	}
 	return false;
 }
 

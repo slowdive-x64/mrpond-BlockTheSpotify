@@ -16,6 +16,7 @@
 #include <winsock2.h>
 #include <Psapi.h>
 
+#include <array>
 #include <fstream>
 #include <future>
 

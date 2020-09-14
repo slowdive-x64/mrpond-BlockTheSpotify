@@ -2,7 +2,7 @@
 
 <center>
     <h3 align="center"><a href=https://en.wikipedia.org/wiki/2020_Thai_protests>Support 2020 Thai protest</a></h3>
-    <h3 align="center">help me stop dictator government!</h3>
+    <h3 align="center">help me stop dictatorship!</h3>
 </center>
 
 <center>
@@ -10,8 +10,8 @@
     <h4 align="center">A multi-purpose adblocker and skip bypass for the <strong>Windows</strong> Spotify Desktop Application.</h4>
     <h5 align="center">Please support Spotify by purchasing premium</h5>
     <p align="center">
-        <strong>Last updated:</strong> 17 August 2020<br>
-        <strong>Last tested version:</strong> 1.1.39.612.g1e7e78a4
+        <strong>Last updated:</strong> 15 September 2020<br>
+        <strong>Last tested version:</strong> 1.1.41.634.gc2c73ca7
     </p> 
 </center>
 

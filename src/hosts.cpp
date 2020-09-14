@@ -16,7 +16,7 @@ bool is_blockhost (const char* nodename) {
 
 	if (0 == nnodename.compare ("wpad"))
 		return g_skip_wpad ? true : false;
-	for (auto i : blockList) {
+	for (const auto &i : blockList) {
 		if (std::string::npos != nnodename.find (i))
 			return true;
 	}

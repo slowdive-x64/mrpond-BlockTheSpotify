@@ -7,7 +7,8 @@ std::wofstream logging;
 
 _getaddrinfo getaddrinfo_orig;
 
-const std::array<std::string, 4> blockList = { "google", "doubleclick", "qualaroo.com" , "fbsbx.com" };
+//const std::array<std::string, 4> blockList = { "google", "doubleclick", "qualaroo.com" , "fbsbx.com" };
+const std::array<std::string, 3> blockList = { "google", "doubleclick", "qualaroo.com" };
 
 // check if ads hostname
 bool is_blockhost (const char* nodename) {

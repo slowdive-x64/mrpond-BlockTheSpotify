@@ -9,6 +9,7 @@ public:
 		m_filename = "./config.ini";
 		m_data["Log"] = read ("Config", "Log");
 		m_data["Skip_wpad"] = read ("Config", "Skip_wpad");
+		m_data["Block_BannerOnly"] = read ("Config", "Block_BannerOnly");
 	}
 
 	bool getConfig (const char* key) {

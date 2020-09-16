@@ -21,7 +21,7 @@ BOOL APIENTRY DllMain (HMODULE hModule,
 		switch (ul_reason_for_call)
 		{
 		case DLL_PROCESS_ATTACH:
-			if (std::string::npos == procname.find ("--type=")) {
+			if (std::string::npos == procname.find ("--type=") && false == g_Config.getConfig("Block_BannerOnly")) {
 				// block ads request - main process
 				CreateThread (NULL, NULL, KillBanner, NULL, 0, NULL);
 				g_Logger.setLogfile ("main_log.txt");

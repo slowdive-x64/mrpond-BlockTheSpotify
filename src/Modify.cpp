@@ -1,6 +1,7 @@
-#include "stdafx.h"
+#include "Modify.h"
+#include "Logger.h"
 
-extern std::wofstream logging;
+extern Logger g_Logger;
 
 // https://www.unknowncheats.me/forum/1064672-post23.html
 bool DataCompare (BYTE* pData, BYTE* bSig, char* szMask)
@@ -44,12 +45,10 @@ DWORD WINAPI KillBanner (LPVOID)
 			VirtualProtect ((char*)skipPod + 3, 1, PAGE_EXECUTE_READWRITE, &oldProtect);
 			memset ((char*)skipPod + 3, 0x65, 1);
 			VirtualProtect ((char*)skipPod + 3, 1, oldProtect, &oldProtect);
-			if (logging.is_open ())
-				logging << "main process - patch success!" << std::endl;
+			g_Logger.Log ("main process - patch success!");
 		}
 		else {
-			if (logging.is_open ())
-				logging << "main process - patch failed!" << std::endl;
+			g_Logger.Log ("main process - patch failed!");
 		}
 
 	}

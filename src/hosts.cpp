@@ -14,7 +14,7 @@ bool is_blockhost (const std::string& nodename) {
 	static bool wpad = g_Config.getConfig ("Skip_wpad");
 	if (0 == nodename.compare ("wpad"))
 		return wpad ? true : false;
-	for (const auto &i : blockList) {
+	for (const auto& i : blockList) {
 		if (std::string::npos != nodename.find (i))
 			return true;
 	}

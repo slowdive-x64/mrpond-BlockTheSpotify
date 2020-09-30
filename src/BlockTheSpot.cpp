@@ -56,6 +56,9 @@ bool IsBlacklistInitialized () {
 bool IsCrashReportingEnabledImpl () {
 	return false;
 }
+bool IsThirdPartyInitialized () {
+	return false;
+}
 bool RegisterLogNotification (HANDLE event_handle) {
 	return false;
 }

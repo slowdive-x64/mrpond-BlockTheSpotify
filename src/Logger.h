@@ -14,16 +14,16 @@ public:
 			m_log.close ();
 		}
 	}
-	void setLogfile (const std::string& logFile) {
+	void setLogfile (std::string_view logFile) {
 		m_filename = logFile;
 		m_isEnable = g_Config.getConfig ("Log");
 		if (m_isEnable) {
-			m_log.open (logFile, std::ios::out | std::ios::app);
+			m_log.open (m_filename, std::ios::out | std::ios::app);
 			m_log << "BlockTheSpot - Build date: " << __TIMESTAMP__ << std::endl;
 		}
 	}
 
-	void Log (const std::string& log) {
+	void Log (std::string_view log) {
 		if (m_isEnable)
 			m_log << log << std::endl;
 	}

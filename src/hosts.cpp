@@ -7,15 +7,15 @@ extern Config g_Config;
 
 _getaddrinfo getaddrinfo_orig;
 
-const std::vector<std::string> blockList = { "google", "doubleclick", "qualaroo.com"/*, "fbsbx.com"*/ };
+const std::vector<std::string_view> blockList = { "google", "doubleclick", "qualaroo.com"/*, "fbsbx.com"*/ };
 
 // check if ads hostname
-bool is_blockhost (const std::string& nodename) {
+bool is_blockhost (std::string_view nodename) {
 	static bool wpad = g_Config.getConfig ("Skip_wpad");
 	if (0 == nodename.compare ("wpad"))
 		return wpad ? true : false;
 	for (const auto& i : blockList) {
-		if (std::string::npos != nodename.find (i))
+		if (std::string_view::npos != nodename.find (i))
 			return true;
 	}
 	return false;

@@ -3,6 +3,8 @@
 <center>
     <h3 align="center"><a href=https://en.wikipedia.org/wiki/2020_Thai_protests>Support 2020 Thai protest</a></h3>
     <h3 align="center">help me stop dictatorship!</h3>
+    <h3 align="center">#whatishappeninginthailand</h3>
+    https://twitter.com/search?q=%23whatishappeninginthailand
 </center>
 
 <center>

@@ -3,7 +3,6 @@
 <center>
     <h3 align="center"><a href=https://en.wikipedia.org/wiki/2020_Thai_protests>Support 2020 Thai protest</a></h3>
     <h3 align="center">help me stop dictatorship!</h3>
-
     <h3 align="center"><a href="https://twitter.com/search?q=%23whatishappeninginthailand">#whatishappeninginthailand</a></h3>
 </center>
 
@@ -51,6 +50,6 @@ set Skip_wpad in config.ini to 1 may help.
 
 #### Note2:
 <center>
-<h3><b>ki</b>ng<b>ller<b/></h3>
+<b>ki</b>ng<b>ller<b/>
 <img src="JUNTA.jpg">
 </center>

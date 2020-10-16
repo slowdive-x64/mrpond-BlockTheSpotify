@@ -48,4 +48,4 @@ set Skip_wpad in config.ini to 1 may help.
 * if automatic install/uninstall .bat not working please contact (https://github.com/rednek46)
 
 #### Note2:
-<img src="JUNTA.JPG">
+<img src="JUNTA.jpg">

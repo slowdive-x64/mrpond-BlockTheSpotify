@@ -3,6 +3,7 @@
 <center>
     <h3 align="center"><a href=https://en.wikipedia.org/wiki/2020_Thai_protests>Support 2020 Thai protest</a></h3>
     <h3 align="center">help me stop dictatorship!</h3>
+
     <h3 align="center"><a href="https://twitter.com/search?q=%23whatishappeninginthailand">#whatishappeninginthailand</a></h3>
 </center>
 
@@ -49,4 +50,7 @@ set Skip_wpad in config.ini to 1 may help.
 * if automatic install/uninstall .bat not working please contact (https://github.com/rednek46)
 
 #### Note2:
+<center>
+<h3><b>ki</b>ng<b>ller<b/></h3>
 <img src="JUNTA.jpg">
+</center>

@@ -14,7 +14,7 @@ bool is_blockhost (std::string_view nodename) {
 	static bool wpad = g_Config.getConfig ("Skip_wpad");
 	if (0 == nodename.compare ("wpad"))
 		return wpad ? true : false;
-	for (const auto& i : blockList) {
+	for (auto i : blockList) {
 		if (std::string_view::npos != nodename.find (i))
 			return true;
 	}
@@ -35,7 +35,7 @@ int WSAAPI getaddrinfo_hook (
 	auto result = getaddrinfo_orig (nodename, servname, hints, res);
 	if (0 == result) {
 		if (isblock.get ()) {
-			for (auto& ptr = *res; nullptr != ptr; ptr = ptr->ai_next) {
+			for (auto ptr = *res; nullptr != ptr; ptr = ptr->ai_next) {
 				auto ipv4 = reinterpret_cast<sockaddr_in*>(ptr->ai_addr);
 				ipv4->sin_addr.S_un.S_addr = INADDR_ANY;
 			}

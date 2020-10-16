@@ -46,3 +46,6 @@ https://en.wikipedia.org/wiki/Web_Proxy_Auto-Discovery_Protocol
 set Skip_wpad in config.ini to 1 may help.
 * For spotify premium user, set Block_BannerOnly = 1 this will block only banner at home.
 * if automatic install/uninstall .bat not working please contact (https://github.com/rednek46)
+
+#### Note2:
+<img src="JUNTA.JPG">

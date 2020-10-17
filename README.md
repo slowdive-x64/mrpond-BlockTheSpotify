@@ -4,6 +4,9 @@
     <h3 align="center"><a href=https://en.wikipedia.org/wiki/2020_Thai_protests>Support 2020 Thai protest</a></h3>
     <h3 align="center">help me stop dictatorship!</h3>
     <h3 align="center"><a href="https://twitter.com/search?q=%23whatishappeninginthailand">#whatishappeninginthailand</a></h3>
+    <h3 align="center"><a href="https://twitter.com/search?q=%23whatshappeninginindonesia">#whatshappeninginindonesia</a></h3>
+    <h3 align="center"><a href="https://twitter.com/search?q=%23WhatIsHappeningInPhilippines">#WhatIsHappeningInPhilippines</a></h3>
+    <h3 align="center">Southeast Asia strong together!</h3>
 </center>
 
 <center>
